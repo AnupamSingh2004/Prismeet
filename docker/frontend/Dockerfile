@@ -1,14 +1,18 @@
-# Use a Node 18 image
-FROM node:18-alpine
+FROM node:18-bullseye-slim
+
+RUN apt-get update && apt-get install -y \
+  ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copy package files & install dependencies
 COPY ../frontend/package*.json /app/
 RUN npm ci
 
-# Copy the rest of the Next.js source
 COPY ../frontend /app
 
-# Default command (dev) – overridden in Compose
-CMD ["bash", "-lc", "npm run dev"]
+# Set environment variables for better Turbopack compatibility
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV TURBOPACK=1
+
+CMD ["npm", "run", "dev"]
