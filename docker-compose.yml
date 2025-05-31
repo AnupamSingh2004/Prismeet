@@ -40,7 +40,8 @@ services:
   # Next.js Frontend (dev)
   frontend:
     build:
-      context: ./docker/frontend
+      context: .
+      dockerfile: docker/frontend/Dockerfile
     env_file:
       - ./.env
     volumes:
