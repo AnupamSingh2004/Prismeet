@@ -750,3 +750,471 @@ INFO 2025-06-06 11:53:20,898 basehttp 16 139897965897408 "GET /api/auth/profile/
 INFO 2025-06-06 11:53:23,679 basehttp 16 139897965897408 "GET /api/auth/profile/ HTTP/1.0" 200 512
 INFO 2025-06-06 11:53:29,223 basehttp 16 139897965897408 "GET /api/auth/profile/ HTTP/1.0" 200 512
 INFO 2025-06-06 11:53:29,622 basehttp 16 139897965897408 "GET /api/auth/profile/ HTTP/1.0" 200 512
+INFO 2025-06-06 12:07:37,635 autoreload 11 140606942083968 Watching for file changes with StatReloader
+INFO 2025-06-06 12:07:59,700 basehttp 11 140606859896512 "GET /api/auth/profile/ HTTP/1.0" 200 512
+INFO 2025-06-06 12:08:00,595 basehttp 11 140606859896512 "GET /api/auth/profile/ HTTP/1.0" 200 512
+INFO 2025-06-06 12:08:13,875 basehttp 11 140606859896512 "GET /api/auth/profile/ HTTP/1.0" 200 512
+INFO 2025-06-06 12:08:14,439 basehttp 11 140606859896512 "GET /api/auth/profile/ HTTP/1.0" 200 512
+INFO 2025-06-06 12:08:14,625 basehttp 11 140606859896512 "GET /api/auth/profile/ HTTP/1.0" 200 512
+INFO 2025-06-06 12:08:43,451 basehttp 11 140606859896512 "GET /api/auth/profile/ HTTP/1.0" 200 512
+INFO 2025-06-06 12:08:47,340 basehttp 11 140606859896512 "GET /api/auth/profile/ HTTP/1.0" 200 512
+INFO 2025-06-06 12:12:39,476 basehttp 11 140606859896512 "OPTIONS /api/auth/logout/ HTTP/1.0" 200 0
+INFO 2025-06-06 12:12:39,492 basehttp 11 140606859896512 "POST /api/auth/logout/ HTTP/1.0" 200 31
+WARNING 2025-06-06 12:14:25,116 log 11 140606859896512 Unauthorized: /api/auth/login/
+WARNING 2025-06-06 12:14:25,117 basehttp 11 140606859896512 "POST /api/auth/login/ HTTP/1.0" 401 51
+INFO 2025-06-06 12:14:46,141 basehttp 11 140606859896512 "POST /api/auth/login/ HTTP/1.0" 200 601
+INFO 2025-06-06 13:26:15,402 autoreload 11 139802654116736 Watching for file changes with StatReloader
+INFO 2025-06-06 13:29:15,947 basehttp 11 139802572744384 "GET /api/auth/profile/ HTTP/1.0" 200 512
+INFO 2025-06-06 13:32:48,317 basehttp 11 139802572744384 "POST /api/auth/logout/ HTTP/1.0" 200 31
+ERROR 2025-06-06 13:33:14,239 log 11 139802572744384 Internal Server Error: /api/auth/register/
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/authentication/views.py", line 59, in register
+    send_verification_email(user)
+  File "/app/authentication/views.py", line 387, in send_verification_email
+    send_mail(
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/__init__.py", line 92, in send_mail
+    return mail.send()
+           ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/message.py", line 307, in send
+    return self.get_connection(fail_silently).send_messages([self])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/backends/smtp.py", line 128, in send_messages
+    new_conn_created = self.open()
+                       ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/backends/smtp.py", line 95, in open
+    self.connection.login(self.username, self.password)
+  File "/usr/local/lib/python3.11/smtplib.py", line 750, in login
+    raise last_exception
+  File "/usr/local/lib/python3.11/smtplib.py", line 739, in login
+    (code, resp) = self.auth(
+                   ^^^^^^^^^^
+  File "/usr/local/lib/python3.11/smtplib.py", line 662, in auth
+    raise SMTPAuthenticationError(code, resp)
+smtplib.SMTPAuthenticationError: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-7482b083a9bsm1254069b3a.77 - gsmtp')
+ERROR 2025-06-06 13:33:14,242 basehttp 11 139802572744384 "POST /api/auth/register/ HTTP/1.0" 500 135380
+ERROR 2025-06-06 13:33:46,985 log 11 139802572744384 Internal Server Error: /api/auth/register/
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/authentication/views.py", line 59, in register
+    send_verification_email(user)
+  File "/app/authentication/views.py", line 387, in send_verification_email
+    send_mail(
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/__init__.py", line 92, in send_mail
+    return mail.send()
+           ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/message.py", line 307, in send
+    return self.get_connection(fail_silently).send_messages([self])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/backends/smtp.py", line 128, in send_messages
+    new_conn_created = self.open()
+                       ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/backends/smtp.py", line 95, in open
+    self.connection.login(self.username, self.password)
+  File "/usr/local/lib/python3.11/smtplib.py", line 750, in login
+    raise last_exception
+  File "/usr/local/lib/python3.11/smtplib.py", line 739, in login
+    (code, resp) = self.auth(
+                   ^^^^^^^^^^
+  File "/usr/local/lib/python3.11/smtplib.py", line 662, in auth
+    raise SMTPAuthenticationError(code, resp)
+smtplib.SMTPAuthenticationError: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-7482b0c7dacsm1289592b3a.141 - gsmtp')
+ERROR 2025-06-06 13:33:46,987 basehttp 11 139802572744384 "POST /api/auth/register/ HTTP/1.0" 500 135389
+INFO 2025-06-06 13:34:56,649 autoreload 11 140667868593024 Watching for file changes with StatReloader
+ERROR 2025-06-06 13:35:02,217 log 11 140667786356416 Internal Server Error: /api/auth/register/
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/authentication/views.py", line 59, in register
+    send_verification_email(user)
+  File "/app/authentication/views.py", line 387, in send_verification_email
+    send_mail(
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/__init__.py", line 92, in send_mail
+    return mail.send()
+           ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/message.py", line 307, in send
+    return self.get_connection(fail_silently).send_messages([self])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/backends/smtp.py", line 128, in send_messages
+    new_conn_created = self.open()
+                       ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/backends/smtp.py", line 95, in open
+    self.connection.login(self.username, self.password)
+  File "/usr/local/lib/python3.11/smtplib.py", line 750, in login
+    raise last_exception
+  File "/usr/local/lib/python3.11/smtplib.py", line 739, in login
+    (code, resp) = self.auth(
+                   ^^^^^^^^^^
+  File "/usr/local/lib/python3.11/smtplib.py", line 662, in auth
+    raise SMTPAuthenticationError(code, resp)
+smtplib.SMTPAuthenticationError: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-7482b0ea3cdsm1255219b3a.159 - gsmtp')
+ERROR 2025-06-06 13:35:02,220 basehttp 11 140667786356416 "POST /api/auth/register/ HTTP/1.0" 500 135389
+INFO 2025-06-06 13:49:26,601 autoreload 11 140667868593024 /app/config/settings.py changed, reloading.
+INFO 2025-06-06 13:49:27,265 autoreload 14 140700425120640 Watching for file changes with StatReloader
+ERROR 2025-06-06 13:49:38,189 log 14 140700343592640 Internal Server Error: /api/auth/register/
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/authentication/views.py", line 59, in register
+    send_verification_email(user)
+  File "/app/authentication/views.py", line 387, in send_verification_email
+    send_mail(
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/__init__.py", line 92, in send_mail
+    return mail.send()
+           ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/message.py", line 307, in send
+    return self.get_connection(fail_silently).send_messages([self])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/backends/smtp.py", line 128, in send_messages
+    new_conn_created = self.open()
+                       ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/backends/smtp.py", line 95, in open
+    self.connection.login(self.username, self.password)
+  File "/usr/local/lib/python3.11/smtplib.py", line 750, in login
+    raise last_exception
+  File "/usr/local/lib/python3.11/smtplib.py", line 739, in login
+    (code, resp) = self.auth(
+                   ^^^^^^^^^^
+  File "/usr/local/lib/python3.11/smtplib.py", line 662, in auth
+    raise SMTPAuthenticationError(code, resp)
+smtplib.SMTPAuthenticationError: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials 98e67ed59e1d1-31349ffaf3bsm1320441a91.46 - gsmtp')
+ERROR 2025-06-06 13:49:38,191 basehttp 14 140700343592640 "POST /api/auth/register/ HTTP/1.0" 500 135380
+INFO 2025-06-06 13:50:41,256 autoreload 11 140074023709568 Watching for file changes with StatReloader
+INFO 2025-06-06 13:51:20,653 autoreload 11 139900846230400 Watching for file changes with StatReloader
+ERROR 2025-06-06 13:51:27,933 log 11 139900764546752 Internal Server Error: /api/auth/register/
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/authentication/views.py", line 59, in register
+    send_verification_email(user)
+  File "/app/authentication/views.py", line 387, in send_verification_email
+    send_mail(
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/__init__.py", line 92, in send_mail
+    return mail.send()
+           ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/message.py", line 307, in send
+    return self.get_connection(fail_silently).send_messages([self])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/backends/smtp.py", line 128, in send_messages
+    new_conn_created = self.open()
+                       ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/backends/smtp.py", line 95, in open
+    self.connection.login(self.username, self.password)
+  File "/usr/local/lib/python3.11/smtplib.py", line 750, in login
+    raise last_exception
+  File "/usr/local/lib/python3.11/smtplib.py", line 739, in login
+    (code, resp) = self.auth(
+                   ^^^^^^^^^^
+  File "/usr/local/lib/python3.11/smtplib.py", line 662, in auth
+    raise SMTPAuthenticationError(code, resp)
+smtplib.SMTPAuthenticationError: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials d9443c01a7336-23603410b57sm12394965ad.209 - gsmtp')
+ERROR 2025-06-06 13:51:27,935 basehttp 11 139900764546752 "POST /api/auth/register/ HTTP/1.0" 500 135399
+ERROR 2025-06-06 13:52:00,122 log 11 139900764546752 Internal Server Error: /api/auth/register/
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/authentication/views.py", line 59, in register
+    send_verification_email(user)
+  File "/app/authentication/views.py", line 387, in send_verification_email
+    send_mail(
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/__init__.py", line 92, in send_mail
+    return mail.send()
+           ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/message.py", line 307, in send
+    return self.get_connection(fail_silently).send_messages([self])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/backends/smtp.py", line 128, in send_messages
+    new_conn_created = self.open()
+                       ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/backends/smtp.py", line 95, in open
+    self.connection.login(self.username, self.password)
+  File "/usr/local/lib/python3.11/smtplib.py", line 750, in login
+    raise last_exception
+  File "/usr/local/lib/python3.11/smtplib.py", line 739, in login
+    (code, resp) = self.auth(
+                   ^^^^^^^^^^
+  File "/usr/local/lib/python3.11/smtplib.py", line 662, in auth
+    raise SMTPAuthenticationError(code, resp)
+smtplib.SMTPAuthenticationError: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials d9443c01a7336-23603096949sm12446685ad.67 - gsmtp')
+ERROR 2025-06-06 13:52:00,124 basehttp 11 139900764546752 "POST /api/auth/register/ HTTP/1.0" 500 135390
+INFO 2025-06-06 13:54:07,444 autoreload 11 140617295100800 Watching for file changes with StatReloader
+INFO 2025-06-06 13:54:10,938 basehttp 11 140617213535936 "POST /api/auth/register/ HTTP/1.0" 201 631
+INFO 2025-06-06 13:55:32,017 basehttp 11 140617213535936 "POST /api/auth/login/ HTTP/1.0" 200 600
+INFO 2025-06-06 14:00:52,330 autoreload 11 140617295100800 /app/config/settings.py changed, reloading.
+INFO 2025-06-06 14:00:52,985 autoreload 15 140308959959936 Watching for file changes with StatReloader
+INFO 2025-06-06 14:01:53,916 autoreload 15 140308959959936 /app/authentication/serializers.py changed, reloading.
+INFO 2025-06-06 14:01:54,823 autoreload 17 139711775529856 Watching for file changes with StatReloader
+INFO 2025-06-06 14:02:40,603 autoreload 11 140352516672384 Watching for file changes with StatReloader
+INFO 2025-06-06 14:04:59,280 autoreload 11 140183506230144 Watching for file changes with StatReloader
+WARNING 2025-06-06 14:05:06,778 log 11 140183424984768 Forbidden: /api/auth/profile/
+WARNING 2025-06-06 14:05:06,778 basehttp 11 140183424984768 "GET /api/auth/profile/ HTTP/1.0" 403 27
+WARNING 2025-06-06 14:05:06,806 log 11 140183424984768 Forbidden: /api/auth/logout/
+WARNING 2025-06-06 14:05:06,807 basehttp 11 140183424984768 "POST /api/auth/logout/ HTTP/1.0" 403 27
+INFO 2025-06-06 14:05:31,247 serializers 11 140183424984768 Sending verification email to sanupam2004@gmail.com
+INFO 2025-06-06 14:05:31,247 serializers 11 140183424984768 Using email backend: django.core.mail.backends.smtp.EmailBackend
+INFO 2025-06-06 14:05:31,248 serializers 11 140183424984768 From email: sanupam2004@gmail.com
+ERROR 2025-06-06 14:05:33,657 serializers 11 140183424984768 Failed to send verification email to sanupam2004@gmail.com: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials d9443c01a7336-236034056e7sm12596995ad.166 - gsmtp')
+ERROR 2025-06-06 14:05:36,199 log 11 140183424984768 Internal Server Error: /api/auth/register/
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/authentication/views.py", line 59, in register
+    send_verification_email(user)
+  File "/app/authentication/views.py", line 387, in send_verification_email
+    send_mail(
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/__init__.py", line 92, in send_mail
+    return mail.send()
+           ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/message.py", line 307, in send
+    return self.get_connection(fail_silently).send_messages([self])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/backends/smtp.py", line 128, in send_messages
+    new_conn_created = self.open()
+                       ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/backends/smtp.py", line 95, in open
+    self.connection.login(self.username, self.password)
+  File "/usr/local/lib/python3.11/smtplib.py", line 750, in login
+    raise last_exception
+  File "/usr/local/lib/python3.11/smtplib.py", line 739, in login
+    (code, resp) = self.auth(
+                   ^^^^^^^^^^
+  File "/usr/local/lib/python3.11/smtplib.py", line 662, in auth
+    raise SMTPAuthenticationError(code, resp)
+smtplib.SMTPAuthenticationError: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials 41be03b00d2f7-b2f5f78da0fsm1211904a12.64 - gsmtp')
+ERROR 2025-06-06 14:05:36,201 basehttp 11 140183424984768 "POST /api/auth/register/ HTTP/1.0" 500 136665
+INFO 2025-06-06 14:07:00,940 autoreload 11 139855135939456 Watching for file changes with StatReloader
+INFO 2025-06-06 14:07:12,457 serializers 11 139855053973184 Sending verification email to sanupam2004@gmail.com
+INFO 2025-06-06 14:07:12,458 serializers 11 139855053973184 Using email backend: django.core.mail.backends.smtp.EmailBackend
+INFO 2025-06-06 14:07:12,458 serializers 11 139855053973184 From email: sanupam2004@gmail.com
+ERROR 2025-06-06 14:07:14,867 serializers 11 139855053973184 Failed to send verification email to sanupam2004@gmail.com: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials d9443c01a7336-23603406659sm12584695ad.186 - gsmtp')
+ERROR 2025-06-06 14:07:18,406 log 11 139855053973184 Internal Server Error: /api/auth/register/
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/authentication/views.py", line 59, in register
+    send_verification_email(user)
+  File "/app/authentication/views.py", line 387, in send_verification_email
+    send_mail(
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/__init__.py", line 92, in send_mail
+    return mail.send()
+           ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/message.py", line 307, in send
+    return self.get_connection(fail_silently).send_messages([self])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/backends/smtp.py", line 128, in send_messages
+    new_conn_created = self.open()
+                       ^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/mail/backends/smtp.py", line 95, in open
+    self.connection.login(self.username, self.password)
+  File "/usr/local/lib/python3.11/smtplib.py", line 750, in login
+    raise last_exception
+  File "/usr/local/lib/python3.11/smtplib.py", line 739, in login
+    (code, resp) = self.auth(
+                   ^^^^^^^^^^
+  File "/usr/local/lib/python3.11/smtplib.py", line 662, in auth
+    raise SMTPAuthenticationError(code, resp)
+smtplib.SMTPAuthenticationError: (535, b'5.7.8 Username and Password not accepted. For more information, go to\n5.7.8  https://support.google.com/mail/?p=BadCredentials d2e1a72fcca58-7482b0f3e59sm1334576b3a.178 - gsmtp')
+ERROR 2025-06-06 14:07:18,409 basehttp 11 139855053973184 "POST /api/auth/register/ HTTP/1.0" 500 136674
+INFO 2025-06-06 14:08:37,053 autoreload 11 139985277565824 Watching for file changes with StatReloader
+INFO 2025-06-06 14:08:51,552 serializers 11 139985127732928 Sending verification email to sanupam2004@gmail.com
+INFO 2025-06-06 14:08:51,552 serializers 11 139985127732928 Using email backend: django.core.mail.backends.smtp.EmailBackend
+INFO 2025-06-06 14:08:51,552 serializers 11 139985127732928 From email: noreply@prismeet.com
+INFO 2025-06-06 14:08:56,151 serializers 11 139985127732928 Verification email sent successfully to sanupam2004@gmail.com
+INFO 2025-06-06 14:09:00,508 basehttp 11 139985127732928 "POST /api/auth/register/ HTTP/1.0" 201 633
+INFO 2025-06-06 14:11:42,176 autoreload 11 139991256333184 Watching for file changes with StatReloader
+INFO 2025-06-06 14:12:12,753 serializers 11 139991103567552 Sending verification email to accounfr4@gmail.com
+INFO 2025-06-06 14:12:12,753 serializers 11 139991103567552 Using email backend: django.core.mail.backends.smtp.EmailBackend
+INFO 2025-06-06 14:12:12,753 serializers 11 139991103567552 From email: noreply@prismeet.com
+INFO 2025-06-06 14:12:16,306 serializers 11 139991103567552 Verification email sent successfully to accounfr4@gmail.com
+INFO 2025-06-06 14:12:22,926 basehttp 11 139991103567552 "POST /api/auth/register/ HTTP/1.0" 201 631
+INFO 2025-06-06 14:35:00,416 basehttp 11 139991103567552 "POST /api/auth/login/ HTTP/1.0" 200 600
+INFO 2025-06-06 14:41:34,033 basehttp 11 139991103567552 "POST /api/auth/logout/ HTTP/1.0" 200 31
+INFO 2025-06-06 14:45:38,110 autoreload 11 139856453925760 Watching for file changes with StatReloader
+INFO 2025-06-06 14:46:58,537 basehttp 11 139856372033216 "OPTIONS /api/auth/google-auth/ HTTP/1.0" 200 0
+INFO 2025-06-06 14:46:58,805 basehttp 11 139856372033216 "POST /api/auth/google-auth/ HTTP/1.0" 200 618

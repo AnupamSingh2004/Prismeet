@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AuthGuard from '@/components/auth/AuthGuard';
+import {GoogleSignInButton} from "@/components/GoogleSignInButton";
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -22,7 +23,7 @@ export default function LoginPage() {
 
         try {
             await login(email, password);
-            router.push('/dashboard');
+            router.push('/');
         } catch (err: any) {
             setError(err.response?.data?.detail || err.response?.data?.error || 'Login failed');
         } finally {
@@ -87,6 +88,11 @@ export default function LoginPage() {
                                     {loading ? 'Signing in...' : 'Sign in'}
                                 </button>
                             </div>
+
+                            <GoogleSignInButton
+                                onSuccess={() => router.push('/')}
+                                onError={(error) => console.log(error.message)}
+                            />
 
                             <div className="text-center">
                                 <Link href="/register" className="text-indigo-600 hover:text-indigo-500">

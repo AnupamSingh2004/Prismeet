@@ -3,9 +3,16 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.urls import reverse
 from .models import User, UserProfile
 import secrets
 import string
+import logging
+
+logger = logging.getLogger(__name__)
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """
@@ -50,7 +57,52 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         # Create user profile
         UserProfile.objects.get_or_create(user=user)
 
+        # Send verification email
+        self.send_verification_email(user)
+
         return user
+
+    def send_verification_email(self, user):
+        """Send verification email to the user"""
+        try:
+            verification_url = f"{settings.FRONTEND_URL}/verify-email?token={user.email_verification_token}"
+
+            subject = "Verify your Prismeet account"
+            message = f"""
+            Hi {user.first_name},
+            
+            Thank you for signing up for Prismeet! Please click the link below to verify your email address:
+            
+            {verification_url}
+            
+            If you didn't create this account, please ignore this email.
+            
+            Best regards,
+            The Prismeet Team
+            """
+
+            from_email = settings.DEFAULT_FROM_EMAIL
+            recipient_list = [user.email]
+
+            logger.info(f"Sending verification email to {user.email}")
+            logger.info(f"Using email backend: {settings.EMAIL_BACKEND}")
+            logger.info(f"From email: {from_email}")
+
+            # Send the email
+            send_mail(
+                subject=subject,
+                message=message,
+                from_email=from_email,
+                recipient_list=recipient_list,
+                fail_silently=False,
+            )
+
+            logger.info(f"Verification email sent successfully to {user.email}")
+
+        except Exception as e:
+            logger.error(f"Failed to send verification email to {user.email}: {str(e)}")
+            # Don't raise the exception to avoid registration failure
+            # but log it for debugging
 
 
 class UserLoginSerializer(serializers.Serializer):

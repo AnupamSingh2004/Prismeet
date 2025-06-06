@@ -3,12 +3,14 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { User } from '@/types/auth';
 import { AuthService } from '@/lib/auth';
+import { GoogleAuth } from '@/lib/googleAuth';
 
 interface AuthContextType {
     user: User | null;
     loading: boolean;
     login: (email: string, password: string) => Promise<void>;
     register: (data: any) => Promise<void>;
+    googleLogin: (token: string) => Promise<void>;
     logout: () => Promise<void>;
     updateUser: (data: Partial<User>) => Promise<void>;
     isAuthenticated: boolean;
@@ -23,17 +25,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const initAuth = async () => {
             try {
+                // Initialize Google Auth for token generation
+                const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+                if (clientId) {
+                    await GoogleAuth.initialize(clientId);
+                }
+
+                // Check existing authentication
                 if (AuthService.isAuthenticated()) {
                     const currentUser = AuthService.getCurrentUser();
                     if (currentUser) {
-                        // Verify token is still valid by fetching fresh profile
-                        const freshUser = await AuthService.getProfile();
-                        setUser(freshUser);
+                        try {
+                            // Verify token is still valid by fetching fresh profile
+                            const freshUser = await AuthService.getProfile();
+                            setUser(freshUser);
+                        } catch (error) {
+                            // Token expired or invalid
+                            await AuthService.logout();
+                        }
                     }
                 }
             } catch (error) {
                 console.error('Auth initialization error:', error);
-                await AuthService.logout();
             } finally {
                 setLoading(false);
             }
@@ -48,7 +61,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const register = async (data: any) => {
-        await AuthService.register(data);
+        const response = await AuthService.register(data);
+        setUser(response.user);
+    };
+
+    const googleLogin = async (googleToken: string) => {
+        try {
+            const response = await AuthService.googleAuth(googleToken);
+            setUser(response.user);
+        } catch (error) {
+            console.error('Google login error:', error);
+            throw error;
+        }
     };
 
     const logout = async () => {
@@ -64,18 +88,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return (
         <AuthContext.Provider
             value={{
-        user,
-            loading,
-            login,
-            register,
-            logout,
-            updateUser,
-            isAuthenticated: !!user,
-    }}
->
-    {children}
-    </AuthContext.Provider>
-);
+                user,
+                loading,
+                login,
+                register,
+                googleLogin,
+                logout,
+                updateUser,
+                isAuthenticated: !!user,
+            }}
+        >
+            {children}
+        </AuthContext.Provider>
+    );
 }
 
 export function useAuth() {

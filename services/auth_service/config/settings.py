@@ -151,19 +151,24 @@ GOOGLE_OAUTH2_CLIENT_ID = config("GOOGLE_OAUTH2_CLIENT_ID", default="")
 GOOGLE_OAUTH2_CLIENT_SECRET = config("GOOGLE_OAUTH2_CLIENT_SECRET", default="")
 
 # Email Settings - FIXED: Better configuration handling
-EMAIL_BACKEND = config("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
+EMAIL_BACKEND = config("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")  # Changed default to SMTP
 
-# Only set email settings if using SMTP backend
+# Email configuration - Always set these for SMTP
+EMAIL_HOST = config("EMAIL_HOST", default="smtp.gmail.com")
+EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
+EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
+EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
+
+# Validate email configuration for SMTP backend
 if EMAIL_BACKEND == "django.core.mail.backends.smtp.EmailBackend":
-    EMAIL_HOST = config("EMAIL_HOST", default="smtp.gmail.com")
-    EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
-    EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
-    EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
-    EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
-
-    # Validate email configuration
     if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:
         print("WARNING: EMAIL_HOST_USER and EMAIL_HOST_PASSWORD must be set for SMTP backend")
+        print(f"Current EMAIL_HOST_USER: '{EMAIL_HOST_USER}'")
+        print("Falling back to console backend for development")
+        EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+    else:
+        print(f"✓ SMTP Email configured with user: {EMAIL_HOST_USER}")
 
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="noreply@prismeet.com")
 

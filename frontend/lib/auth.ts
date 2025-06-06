@@ -1,80 +1,185 @@
-// src/lib/auth.ts
-import api from './api';
-import Cookies from 'js-cookie';
-import { LoginRequest, RegisterRequest, AuthResponse, User } from '@/types/auth';
+import { User } from '@/types/auth';
+
+export interface LoginCredentials {
+    email: string;
+    password: string;
+}
+
+export interface RegisterData {
+    email: string;
+    password: string;
+    confirm_password: string;
+    first_name: string;
+    last_name: string;
+    phone_number?: string;
+}
+
+export interface AuthResponse {
+    user: User;
+    token: string;
+    message: string;
+}
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export class AuthService {
-    static async login(data: LoginRequest): Promise<AuthResponse> {
-        const response = await api.post('/login/', data);
-        const { user, token } = response.data;
+    private static TOKEN_KEY = 'authToken';
+    private static USER_KEY = 'currentUser';
 
-        Cookies.set('auth_token', token, { expires: 7 });
-        Cookies.set('user', JSON.stringify(user), { expires: 7 });
+    static async login(credentials: LoginCredentials): Promise<AuthResponse> {
+        const response = await fetch(`${API_BASE_URL}/api/auth/login/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(credentials),
+        });
 
-        return response.data;
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Login failed');
+        }
+
+        const data = await response.json();
+        this.storeAuthData(data.token, data.user);
+        return data;
     }
 
-    static async register(data: RegisterRequest): Promise<AuthResponse> {
-        const response = await api.post('/register/', data);
-        return response.data;
+    static async register(userData: RegisterData): Promise<AuthResponse> {
+        const response = await fetch(`${API_BASE_URL}/api/auth/register/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Registration failed');
+        }
+
+        const data = await response.json();
+        this.storeAuthData(data.token, data.user);
+        return data;
+    }
+
+    // Send Google token to Django backend for processing
+    static async googleAuth(googleToken: string): Promise<AuthResponse> {
+        const response = await fetch(`${API_BASE_URL}/api/auth/google-auth/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ google_token: googleToken }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Google authentication failed');
+        }
+
+        const data = await response.json();
+        this.storeAuthData(data.token, data.user);
+        return data;
     }
 
     static async logout(): Promise<void> {
-        try {
-            await api.post('/logout/');
-        } catch (error) {
-            console.error('Logout error:', error);
-        } finally {
-            Cookies.remove('auth_token');
-            Cookies.remove('user');
+        const token = this.getToken();
+        if (token) {
+            try {
+                await fetch(`${API_BASE_URL}/api/auth/logout/`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Token ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+            } catch (error) {
+                console.error('Logout API call failed:', error);
+            }
         }
+
+        this.clearAuthData();
     }
 
     static async getProfile(): Promise<User> {
-        const response = await api.get('/profile/');
-        return response.data;
+        const token = this.getToken();
+        if (!token) {
+            throw new Error('No authentication token');
+        }
+
+        const response = await fetch(`${API_BASE_URL}/api/auth/profile/`, {
+            headers: {
+                'Authorization': `Token ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                this.clearAuthData();
+                throw new Error('Authentication expired');
+            }
+            throw new Error('Failed to fetch profile');
+        }
+
+        return await response.json();
     }
 
     static async updateProfile(data: Partial<User>): Promise<User> {
-        const response = await api.put('/profile/', data);
-        Cookies.set('user', JSON.stringify(response.data), { expires: 7 });
-        return response.data;
+        const token = this.getToken();
+        if (!token) {
+            throw new Error('No authentication token');
+        }
+
+        const response = await fetch(`${API_BASE_URL}/api/auth/profile/`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Token ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Profile update failed');
+        }
+
+        const updatedUser = await response.json();
+        this.storeUser(updatedUser);
+        return updatedUser;
     }
 
-    static async changePassword(data: {
-        old_password: string;
-        new_password: string;
-        confirm_password: string;
-    }): Promise<void> {
-        await api.post('/change-password/', data);
-    }
-
-    static async requestPasswordReset(email: string): Promise<void> {
-        await api.post('/password-reset-request/', { email });
-    }
-
-    static async confirmPasswordReset(data: {
-        token: string;
-        new_password: string;
-        confirm_password: string;
-    }): Promise<void> {
-        await api.post('/password-reset-confirm/', data);
-    }
-
-    static async verifyEmail(token: string): Promise<void> {
-        await api.post('/verify-email/', { token });
-    }
-
-    static async resendVerificationEmail(): Promise<void> {
-        await api.post('/resend-verification/');
+    static getToken(): string | null {
+        if (typeof window === 'undefined') return null;
+        return localStorage.getItem(this.TOKEN_KEY);
     }
 
     static getCurrentUser(): User | null {
-        const userCookie = Cookies.get('user');
-        return userCookie ? JSON.parse(userCookie) : null;
+        if (typeof window === 'undefined') return null;
+        const userData = localStorage.getItem(this.USER_KEY);
+        return userData ? JSON.parse(userData) : null;
     }
 
     static isAuthenticated(): boolean {
-        return !!Cookies.get('auth_token');
+        return !!this.getToken();
+    }
+
+    private static storeAuthData(token: string, user: User): void {
+        if (typeof window === 'undefined') return;
+        localStorage.setItem(this.TOKEN_KEY, token);
+        localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    }
+
+    private static storeUser(user: User): void {
+        if (typeof window === 'undefined') return;
+        localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+    }
+
+    private static clearAuthData(): void {
+        if (typeof window === 'undefined') return;
+        localStorage.removeItem(this.TOKEN_KEY);
+        localStorage.removeItem(this.USER_KEY);
     }
 }
