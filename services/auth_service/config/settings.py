@@ -6,7 +6,6 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
 import os
 from datetime import timedelta
 from pathlib import Path
@@ -18,15 +17,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config("DJANGO_SECRET_KEY")
 DEBUG = config("DJANGO_DEBUG", default=False, cast=bool)
-
 ALLOWED_HOSTS = config("DJANGO_ALLOWED_HOSTS", default="*", cast=lambda v: v.split(","))
 
 # Custom User Model
 AUTH_USER_MODEL = 'authentication.User'
 
-# Postgres via DATABASE_URL environment variable
+# Database configuration - FIXED: Removed duplicate DATABASES
 DATABASES = {
-    "default": dj_database_url.config(default=config("DATABASE_URL"))
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": config("POSTGRES_DB"),
+        "USER": config("POSTGRES_USER"),
+        "PASSWORD": config("POSTGRES_PASSWORD"),
+        "HOST": config("POSTGRES_HOST"),
+        "PORT": config("POSTGRES_PORT"),
+    }
 }
 
 # Application definition
@@ -79,19 +84,6 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # Channels configuration (required since 'channels' is in INSTALLED_APPS)
 ASGI_APPLICATION = "config.asgi.application"
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("POSTGRES_DB"),
-        "USER": config("POSTGRES_USER"),
-        "PASSWORD": config("POSTGRES_PASSWORD"),
-        "HOST": config("POSTGRES_HOST"),
-        "PORT": config("POSTGRES_PORT"),
-    }
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -152,20 +144,27 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     config("FRONTEND_URL", default="http://localhost:3000"),
 ]
-
 CORS_ALLOW_CREDENTIALS = True
 
 # Google OAuth2 Settings
 GOOGLE_OAUTH2_CLIENT_ID = config("GOOGLE_OAUTH2_CLIENT_ID", default="")
 GOOGLE_OAUTH2_CLIENT_SECRET = config("GOOGLE_OAUTH2_CLIENT_SECRET", default="")
 
-# Email Settings
+# Email Settings - FIXED: Better configuration handling
 EMAIL_BACKEND = config("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
-EMAIL_HOST = config("EMAIL_HOST", default="smtp.gmail.com")
-EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
-EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
-EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
+
+# Only set email settings if using SMTP backend
+if EMAIL_BACKEND == "django.core.mail.backends.smtp.EmailBackend":
+    EMAIL_HOST = config("EMAIL_HOST", default="smtp.gmail.com")
+    EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
+    EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
+    EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
+    EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
+
+    # Validate email configuration
+    if not EMAIL_HOST_USER or not EMAIL_HOST_PASSWORD:
+        print("WARNING: EMAIL_HOST_USER and EMAIL_HOST_PASSWORD must be set for SMTP backend")
+
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="noreply@prismeet.com")
 
 # Frontend URL (for email links)
@@ -181,7 +180,6 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-
     # Use whitenoise for static files in production
     MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
@@ -197,6 +195,11 @@ REST_FRAMEWORK_SIMPLEJWT = {
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 30  # 30 days
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
+
+# Create logs directory if it doesn't exist
+LOGS_DIR = os.path.join(BASE_DIR, 'logs')
+if not os.path.exists(LOGS_DIR):
+    os.makedirs(LOGS_DIR)
 
 # Logging Configuration
 LOGGING = {
@@ -216,7 +219,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'django.log'),
+            'filename': os.path.join(LOGS_DIR, 'django.log'),
             'formatter': 'verbose',
         },
         'console': {
