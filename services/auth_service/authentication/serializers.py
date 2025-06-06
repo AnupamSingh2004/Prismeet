@@ -174,6 +174,18 @@ class UserProfileSerializer(serializers.ModelSerializer):
         except UserProfile.DoesNotExist:
             return None
 
+    def to_representation(self, instance):
+        """
+        Customize the representation to ensure profile_picture is always included
+        """
+        data = super().to_representation(instance)
+
+        # Ensure profile_picture is included even if it's an empty string
+        if 'profile_picture' not in data or data['profile_picture'] is None:
+            data['profile_picture'] = ''
+
+        return data
+
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile', {})
 
@@ -190,7 +202,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
             profile.save()
 
         return instance
-
 
 class PasswordChangeSerializer(serializers.Serializer):
     """

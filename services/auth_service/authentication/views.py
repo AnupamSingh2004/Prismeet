@@ -138,12 +138,32 @@ def google_auth(request):
             # Check if user exists
             try:
                 user = User.objects.get(email=email)
-                # Update Google info if not set
+                # Update Google info and profile picture for existing users
+                user_updated = False
+
                 if not user.google_id:
                     user.google_id = google_id
                     user.provider = 'google'
                     user.is_email_verified = True
+                    user_updated = True
+
+                # Always update profile picture if available from Google
+                if profile_picture and user.profile_picture != profile_picture:
+                    user.profile_picture = profile_picture
+                    user_updated = True
+
+                # Update first/last name if they're empty
+                if not user.first_name and first_name:
+                    user.first_name = first_name
+                    user_updated = True
+
+                if not user.last_name and last_name:
+                    user.last_name = last_name
+                    user_updated = True
+
+                if user_updated:
                     user.save()
+
             except User.DoesNotExist:
                 # Create new user
                 with transaction.atomic():
@@ -153,7 +173,7 @@ def google_auth(request):
                         first_name=first_name,
                         last_name=last_name,
                         google_id=google_id,
-                        profile_picture=profile_picture,
+                        profile_picture=profile_picture,  # Make sure this is set
                         provider='google',
                         is_email_verified=True,
                         is_active=True
@@ -188,7 +208,6 @@ def google_auth(request):
             }, status=status.HTTP_400_BAD_REQUEST)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])

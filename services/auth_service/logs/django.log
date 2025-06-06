@@ -1218,3 +1218,12 @@ INFO 2025-06-06 14:41:34,033 basehttp 11 139991103567552 "POST /api/auth/logout/
 INFO 2025-06-06 14:45:38,110 autoreload 11 139856453925760 Watching for file changes with StatReloader
 INFO 2025-06-06 14:46:58,537 basehttp 11 139856372033216 "OPTIONS /api/auth/google-auth/ HTTP/1.0" 200 0
 INFO 2025-06-06 14:46:58,805 basehttp 11 139856372033216 "POST /api/auth/google-auth/ HTTP/1.0" 200 618
+INFO 2025-06-06 14:53:56,638 basehttp 11 139856372033216 "GET /api/auth/profile/ HTTP/1.0" 200 513
+INFO 2025-06-06 14:53:58,435 basehttp 11 139856372033216 "GET /api/auth/profile/ HTTP/1.0" 200 513
+INFO 2025-06-06 14:59:42,924 autoreload 11 139856453925760 /app/authentication/views.py changed, reloading.
+INFO 2025-06-06 14:59:43,725 autoreload 17 139626890447744 Watching for file changes with StatReloader
+INFO 2025-06-06 15:00:39,604 autoreload 17 139626890447744 /app/authentication/serializers.py changed, reloading.
+INFO 2025-06-06 15:00:40,250 autoreload 19 139735588780928 Watching for file changes with StatReloader
+INFO 2025-06-06 15:01:10,563 basehttp 19 139735506872000 "GET /api/auth/profile/ HTTP/1.0" 200 511
+INFO 2025-06-06 15:01:13,124 basehttp 19 139735506872000 "POST /api/auth/logout/ HTTP/1.0" 200 31
+INFO 2025-06-06 15:02:06,687 basehttp 19 139735506872000 "POST /api/auth/google-auth/ HTTP/1.0" 200 710
