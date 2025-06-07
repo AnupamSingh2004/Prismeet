@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import AuthGuard from '@/components/auth/AuthGuard';
@@ -11,7 +11,7 @@ interface ApiErrorResponse {
     [key: string]: unknown;
 }
 
-export default function VerifyEmailPage() {
+function VerifyEmailForm() {
     const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'invalid'>('loading');
     const [message, setMessage] = useState('');
     const [resending, setResending] = useState(false);
@@ -36,7 +36,6 @@ export default function VerifyEmailPage() {
                 setStatus('success');
                 setMessage('Your email has been verified successfully!');
 
-                // Redirect to login after 3 seconds
                 setTimeout(() => {
                     router.push('/login');
                 }, 3000);
@@ -126,59 +125,88 @@ export default function VerifyEmailPage() {
     };
 
     return (
-        <AuthGuard requireAuth={false}>
-            <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-                <div className="sm:mx-auto sm:w-full sm:max-w-md">
-                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        Email Verification
-                    </h2>
-                </div>
+        <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+            <div className="sm:mx-auto sm:w-full sm:max-w-md">
+                <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Email Verification
+                </h2>
+            </div>
 
-                <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-                    <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                        <div className="text-center">
-                            {getStatusIcon()}
+            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+                <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                    <div className="text-center">
+                        {getStatusIcon()}
 
-                            <p className="text-gray-600 mb-6">
-                                {message}
+                        <p className="text-gray-600 mb-6">
+                            {message}
+                        </p>
+
+                        {status === 'success' && (
+                            <p className="text-sm text-gray-500 mb-4">
+                                You will be redirected to the login page in a few seconds...
                             </p>
+                        )}
 
-                            {status === 'success' && (
-                                <p className="text-sm text-gray-500 mb-4">
-                                    You will be redirected to the login page in a few seconds...
-                                </p>
-                            )}
-
-                            {status === 'error' && (
-                                <div className="space-y-4">
-                                    <button
-                                        onClick={resendVerification}
-                                        disabled={resending}
-                                        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-                                    >
-                                        {resending ? 'Sending...' : 'Resend Verification Email'}
-                                    </button>
-                                </div>
-                            )}
-
-                            <div className="mt-6 space-y-2">
-                                <Link
-                                    href="/login"
-                                    className="text-indigo-600 hover:text-indigo-500 text-sm block"
+                        {status === 'error' && (
+                            <div className="space-y-4">
+                                <button
+                                    onClick={resendVerification}
+                                    disabled={resending}
+                                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
                                 >
-                                    Back to Login
-                                </Link>
-                                <Link
-                                    href="/register"
-                                    className="text-indigo-600 hover:text-indigo-500 text-sm block"
-                                >
-                                    Create New Account
-                                </Link>
+                                    {resending ? 'Sending...' : 'Resend Verification Email'}
+                                </button>
                             </div>
+                        )}
+
+                        <div className="mt-6 space-y-2">
+                            <Link
+                                href="/login"
+                                className="text-indigo-600 hover:text-indigo-500 text-sm block"
+                            >
+                                Back to Login
+                            </Link>
+                            <Link
+                                href="/register"
+                                className="text-indigo-600 hover:text-indigo-500 text-sm block"
+                            >
+                                Create New Account
+                            </Link>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    );
+}
+
+function LoadingFallback() {
+    return (
+        <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+            <div className="sm:mx-auto sm:w-full sm:max-w-md">
+                <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Email Verification
+                </h2>
+            </div>
+
+            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+                <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                        <p className="text-gray-600">Loading verification...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default function VerifyEmailPage() {
+    return (
+        <AuthGuard requireAuth={false}>
+            <Suspense fallback={<LoadingFallback />}>
+                <VerifyEmailForm />
+            </Suspense>
         </AuthGuard>
     );
 }
