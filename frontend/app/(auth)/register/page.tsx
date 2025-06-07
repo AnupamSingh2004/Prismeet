@@ -7,6 +7,17 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AuthGuard from '@/components/auth/AuthGuard';
 
+interface ApiError {
+    response?: {
+        data?: {
+            detail?: string;
+            error?: string;
+            non_field_errors?: string[];
+            [key: string]: unknown;
+        };
+    };
+}
+
 export default function RegisterPage() {
     const [formData, setFormData] = useState({
         email: '',
@@ -39,8 +50,9 @@ export default function RegisterPage() {
             await register(formData);
             setSuccess(true);
             setTimeout(() => router.push('/login'), 3000);
-        } catch (err: any) {
-            const errorData = err.response?.data;
+        } catch (err: unknown) {
+            const apiError = err as ApiError;
+            const errorData = apiError.response?.data;
             if (errorData) {
                 const errorMessage = errorData.detail ||
                     errorData.error ||

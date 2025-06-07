@@ -24,8 +24,13 @@ export default function LoginPage() {
         try {
             await login(email, password);
             router.push('/');
-        } catch (err: any) {
-            setError(err.response?.data?.detail || err.response?.data?.error || 'Login failed');
+        } catch (err: unknown) {
+            const errorMessage = err && typeof err === 'object' && 'response' in err
+                ? (err as { response?: { data?: { detail?: string; error?: string } } }).response?.data?.detail
+                || (err as { response?: { data?: { detail?: string; error?: string } } }).response?.data?.error
+                || 'Login failed'
+                : 'Login failed';
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }

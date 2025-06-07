@@ -31,7 +31,7 @@ export default function ForgotPasswordPage() {
             } else {
                 setError(data.error || data.email?.[0] || 'Failed to send reset email');
             }
-        } catch (error) {
+        } catch {
             setError('An error occurred. Please try again.');
         } finally {
             setLoading(false);
@@ -62,12 +62,12 @@ export default function ForgotPasswordPage() {
                                 </h3>
 
                                 <p className="text-gray-600 mb-6">
-                                    We've sent a password reset link to <span className="font-medium">{email}</span>.
+                                    We&apos;ve sent a password reset link to <span className="font-medium">{email}</span>.
                                     Please check your inbox and follow the instructions to reset your password.
                                 </p>
 
                                 <p className="text-sm text-gray-500 mb-6">
-                                    The reset link will expire in 24 hours. If you don't see the email, check your spam folder.
+                                    The reset link will expire in 24 hours. If you don&apos;t see the email, check your spam folder.
                                 </p>
 
                                 <div className="space-y-2">
@@ -103,7 +103,7 @@ export default function ForgotPasswordPage() {
                         Forgot Your Password?
                     </h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
-                        Enter your email address and we'll send you a link to reset your password.
+                        Enter your email address and we&apos;ll send you a link to reset your password.
                     </p>
                 </div>
 
@@ -148,7 +148,7 @@ export default function ForgotPasswordPage() {
                                     Back to Login
                                 </Link>
                                 <Link href="/register" className="text-indigo-600 hover:text-indigo-500 text-sm block">
-                                    Don't have an account? Sign up
+                                    Don&apos;t have an account? Sign up
                                 </Link>
                             </div>
                         </form>

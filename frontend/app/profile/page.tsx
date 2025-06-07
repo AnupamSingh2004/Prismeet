@@ -7,7 +7,6 @@ import {
     Mail,
     Phone,
     Globe,
-    MapPin,
     Clock,
     User,
     Building,
@@ -15,25 +14,18 @@ import {
     Bell,
     Loader2,
     Camera,
-    Settings,
     Calendar,
     Shield,
-    LogOut,
     Key,
-    Check,
-    X,
-    Edit3,
-    Save
+    Check
 } from 'lucide-react';
 import { EditableField } from '@/components/profile/EditableField';
 import { NotificationToggle } from '@/components/profile/NotificationToggle';
-import { ProfilePicture } from '@/components/profile/ProfilePicture';
-import { ProfileStats } from '@/components/profile/ProfileStats';
-import { UserFormData, SelectOption } from '@/types/user';
+import {UserFormData, SelectOption, UserProfile} from '@/types/user';
 import Image from 'next/image';
 
 export default function ModernProfile() {
-    const { user, loading, updateUser, logout } = useAuth();
+    const { user, loading, updateUser } = useAuth();
     const router = useRouter();
 
     const [editingFields, setEditingFields] = useState<Set<string>>(new Set());
@@ -99,20 +91,50 @@ export default function ModernProfile() {
             // Reset field value when canceling edit
             if (user) {
                 if (field.startsWith('profile.')) {
-                    const profileField = field.replace('profile.', '') as keyof typeof formData.profile;
+                    const profileField = field.replace('profile.', '') as keyof UserProfile;
                     setFormData(prev => ({
                         ...prev,
                         profile: {
                             ...prev.profile,
-                            [profileField]: user.profile?.[profileField] || ''
+                            [profileField]: user.profile?.[profileField] ?? ''
                         }
                     }));
                 } else {
-                    const userField = field as keyof Omit<UserFormData, 'profile'>;
-                    setFormData(prev => ({
-                        ...prev,
-                        [userField]: (user as any)[userField] || ''
-                    }));
+                    // Handle each user field explicitly with proper typing
+                    switch (field) {
+                        case 'first_name':
+                            setFormData(prev => ({
+                                ...prev,
+                                first_name: user.first_name ?? ''
+                            }));
+                            break;
+                        case 'last_name':
+                            setFormData(prev => ({
+                                ...prev,
+                                last_name: user.last_name ?? ''
+                            }));
+                            break;
+                        case 'phone_number':
+                            setFormData(prev => ({
+                                ...prev,
+                                phone_number: user.phone_number ?? ''
+                            }));
+                            break;
+                        case 'timezone':
+                            setFormData(prev => ({
+                                ...prev,
+                                timezone: user.timezone ?? ''
+                            }));
+                            break;
+                        case 'default_meeting_duration':
+                            setFormData(prev => ({
+                                ...prev,
+                                default_meeting_duration: user.default_meeting_duration ?? 30
+                            }));
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
             return newSet;
@@ -219,7 +241,6 @@ export default function ModernProfile() {
     };
 
     const handleProfilePictureUpload = () => {
-        // Create a file input and trigger it
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Bell, LogOut, User, Video, Calendar, FileText, Menu, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 import { useAuth } from '@/hooks/useAuth';
 
@@ -57,11 +58,15 @@ const Navbar = () => {
             <div className="p-4 border-b border-gray-700/50">
                 <div className="flex items-center space-x-3">
                     {user?.profile_picture ? (
-                        <img
-                            src={user.profile_picture}
-                            alt={user.full_name}
-                            className="w-12 h-12 rounded-full object-cover"
-                        />
+                        <div className="w-12 h-12 rounded-full overflow-hidden relative">
+                            <Image
+                                src={user.profile_picture}
+                                alt={user.full_name || 'User'}
+                                fill
+                                className="object-cover"
+                                sizes="48px"
+                            />
+                        </div>
                     ) : (
                         <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold text-lg">
                             {user?.first_name && user?.last_name
@@ -152,11 +157,15 @@ const Navbar = () => {
                                     className="flex items-center space-x-2 p-1.5 hover:bg-gray-800/50 rounded-lg transition-colors"
                                 >
                                     {user?.profile_picture ? (
-                                        <img
-                                            src={user.profile_picture}
-                                            alt={user.full_name}
-                                            className="w-8 h-8 rounded-full object-cover"
-                                        />
+                                        <div className="w-8 h-8 rounded-full overflow-hidden relative">
+                                            <Image
+                                                src={user.profile_picture}
+                                                alt={user.full_name || 'User'}
+                                                fill
+                                                className="object-cover"
+                                                sizes="32px"
+                                            />
+                                        </div>
                                     ) : (
                                         <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                                             {user?.first_name && user?.last_name
@@ -206,11 +215,15 @@ const Navbar = () => {
                         <div className="px-3 py-2">
                             <div className="flex items-center space-x-3 mb-2">
                                 {user?.profile_picture ? (
-                                    <img
-                                        src={user.profile_picture}
-                                        alt={user.full_name}
-                                        className="w-8 h-8 rounded-full object-cover"
-                                    />
+                                    <div className="w-8 h-8 rounded-full overflow-hidden relative">
+                                        <Image
+                                            src={user.profile_picture}
+                                            alt={user.full_name || 'User'}
+                                            fill
+                                            className="object-cover"
+                                            sizes="32px"
+                                        />
+                                    </div>
                                 ) : (
                                     <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                                         {user?.first_name && user?.last_name

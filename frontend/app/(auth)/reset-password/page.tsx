@@ -5,6 +5,12 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import AuthGuard from '@/components/auth/AuthGuard';
 
+interface ApiErrorResponse {
+    error?: string;
+    new_password?: string[];
+    [key: string]: unknown;
+}
+
 export default function ResetPasswordPage() {
     const [formData, setFormData] = useState({
         new_password: '',
@@ -74,7 +80,7 @@ export default function ResetPasswordPage() {
                 }),
             });
 
-            const data = await response.json();
+            const data = await response.json() as ApiErrorResponse;
 
             if (response.ok) {
                 setSuccess(true);
@@ -85,7 +91,8 @@ export default function ResetPasswordPage() {
             } else {
                 setError(data.error || data.new_password?.[0] || 'Failed to reset password');
             }
-        } catch (error) {
+        } catch (err) {
+            console.error('Password reset error:', err);
             setError('An error occurred. Please try again.');
         } finally {
             setLoading(false);
@@ -94,46 +101,44 @@ export default function ResetPasswordPage() {
 
     if (success) {
         return (
-            <AuthGuard requireAuth={false}>
-                <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-                    <div className="sm:mx-auto sm:w-full sm:max-w-md">
-                        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                            Password Reset Successful
-                        </h2>
-                    </div>
+            <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+                <div className="sm:mx-auto sm:w-full sm:max-w-md">
+                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                        Password Reset Successful
+                    </h2>
+                </div>
 
-                    <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-                        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                            <div className="text-center">
-                                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
-                                    <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                                    </svg>
-                                </div>
-
-                                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                                    Password Updated Successfully
-                                </h3>
-
-                                <p className="text-gray-600 mb-6">
-                                    Your password has been successfully reset. You can now log in with your new password.
-                                </p>
-
-                                <p className="text-sm text-gray-500 mb-4">
-                                    You will be redirected to the login page in a few seconds...
-                                </p>
-
-                                <Link
-                                    href="/login"
-                                    className="inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                    Go to Login Now
-                                </Link>
+                <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+                    <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                        <div className="text-center">
+                            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                                <svg className="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
                             </div>
+
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                Password Updated Successfully
+                            </h3>
+
+                            <p className="text-gray-600 mb-6">
+                                Your password has been successfully reset. You can now log in with your new password.
+                            </p>
+
+                            <p className="text-sm text-gray-500 mb-4">
+                                You will be redirected to the login page in a few seconds...
+                            </p>
+
+                            <Link
+                                href="/login"
+                                className="inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            >
+                                Go to Login Now
+                            </Link>
                         </div>
                     </div>
                 </div>
-            </AuthGuard>
+            </div>
         );
     }
 

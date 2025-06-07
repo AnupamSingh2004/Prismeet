@@ -1,9 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import AuthGuard from '@/components/auth/AuthGuard';
+
+interface ApiErrorResponse {
+    error?: string;
+    detail?: string;
+    [key: string]: unknown;
+}
 
 export default function VerifyEmailPage() {
     const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'invalid'>('loading');
@@ -14,17 +20,7 @@ export default function VerifyEmailPage() {
     const searchParams = useSearchParams();
     const token = searchParams.get('token');
 
-    useEffect(() => {
-        if (!token) {
-            setStatus('invalid');
-            setMessage('Invalid verification link');
-            return;
-        }
-
-        verifyEmail(token);
-    }, [token]);
-
-    const verifyEmail = async (verificationToken: string) => {
+    const verifyEmail = useCallback(async (verificationToken: string) => {
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify-email/`, {
                 method: 'POST',
@@ -34,7 +30,7 @@ export default function VerifyEmailPage() {
                 body: JSON.stringify({ token: verificationToken }),
             });
 
-            const data = await response.json();
+            const data = await response.json() as ApiErrorResponse;
 
             if (response.ok) {
                 setStatus('success');
@@ -48,31 +44,46 @@ export default function VerifyEmailPage() {
                 setStatus('error');
                 setMessage(data.error || 'Verification failed');
             }
-        } catch (error) {
+        } catch (err) {
+            console.error('Email verification error:', err);
             setStatus('error');
             setMessage('An error occurred during verification');
         }
-    };
+    }, [router]);
+
+    useEffect(() => {
+        if (!token) {
+            setStatus('invalid');
+            setMessage('Invalid verification link');
+            return;
+        }
+
+        verifyEmail(token);
+    }, [token, verifyEmail]);
 
     const resendVerification = async () => {
         setResending(true);
         try {
+            // Check if we're in browser environment before accessing localStorage
+            const authToken = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/resend-verification/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Token ${localStorage.getItem('authToken')}`,
+                    ...(authToken && { 'Authorization': `Token ${authToken}` }),
                 },
             });
 
-            const data = await response.json();
+            const data = await response.json() as ApiErrorResponse;
 
             if (response.ok) {
                 setMessage('Verification email sent successfully! Please check your inbox.');
             } else {
                 setMessage(data.error || 'Failed to resend verification email');
             }
-        } catch (error) {
+        } catch (err) {
+            console.error('Resend verification error:', err);
             setMessage('Failed to resend verification email');
         } finally {
             setResending(false);

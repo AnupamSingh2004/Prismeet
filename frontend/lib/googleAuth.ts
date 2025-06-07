@@ -1,6 +1,29 @@
+// Google Identity Services type definitions
+interface GoogleAccountsId {
+    initialize(config: {
+        client_id: string;
+        callback: (response: GoogleCredentialResponse) => void;
+    }): void;
+    renderButton(element: HTMLElement, config: {
+        theme?: string;
+        size?: string;
+        width?: string;
+        text?: string;
+    }): void;
+    prompt(): void;
+}
+
+interface GoogleAccounts {
+    id: GoogleAccountsId;
+}
+
+interface GoogleGsi {
+    accounts: GoogleAccounts;
+}
+
 declare global {
     interface Window {
-        google: any;
+        google: GoogleGsi;
     }
 }
 
