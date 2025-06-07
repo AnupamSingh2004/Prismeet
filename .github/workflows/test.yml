@@ -1,21 +1,24 @@
 name: 🧪 Test Code
 
+# When should this run?
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop ]  # When you push to main or develop
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, develop ]  # When someone creates a PR
 
 jobs:
   # Test the frontend (React/Next.js)
   test-frontend:
     name: 🎨 Frontend Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Use Ubuntu server
 
     steps:
+      # Step 1: Get your code
       - name: 📥 Get the code
         uses: actions/checkout@v4
 
+      # Step 2: Setup Node.js for React
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -23,10 +26,12 @@ jobs:
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
 
+      # Step 3: Install packages
       - name: 📦 Install packages
         working-directory: ./frontend
         run: npm install
 
+      # Step 4: Check for TypeScript errors
       - name: 🔍 Check TypeScript
         working-directory: ./frontend
         run: |
@@ -37,6 +42,7 @@ jobs:
             echo "No type-check script found, skipping..."
           fi
 
+      # Step 5: Check code style
       - name: ✨ Check code style
         working-directory: ./frontend
         run: |
@@ -47,6 +53,7 @@ jobs:
             echo "No lint script found, skipping..."
           fi
 
+      # Step 6: Try to build the app
       - name: 🏗️ Build frontend
         working-directory: ./frontend
         run: npm run build
@@ -95,7 +102,8 @@ jobs:
           DATABASE_URL: postgresql://test_user:test_pass@localhost:5432/prismeet_test
           REDIS_URL: redis://localhost:6379/0
           DEBUG: true
-          SECRET_KEY: test-secret-key-for-github-actions
+          DJANGO_SECRET_KEY: test-secret-key-for-github-actions-very-long-and-secure
+          SECRET_KEY: test-secret-key-for-github-actions-very-long-and-secure
         run: |
           # Install Python packages
           pip install -r requirements.txt
