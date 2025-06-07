@@ -14,7 +14,6 @@ frontend/.next/
 # Environment files
 .env
 .env.prod
-.env.example
 
 # Docker data
 postgres_data/
