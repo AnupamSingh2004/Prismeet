@@ -1,5 +1,6 @@
 name: 🐳 Docker Check
 
+# When should this run?
 on:
   push:
     branches: [ main, develop ]
@@ -10,7 +11,7 @@ jobs:
   docker-build-test:
     name: 🐳 Test Docker Build
     runs-on: ubuntu-latest
-
+    
     steps:
       # Step 1: Get your code
       - name: 📥 Get the code
@@ -19,6 +20,12 @@ jobs:
       # Step 2: Setup Docker Buildx (for better Docker builds)
       - name: 🔧 Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      # Step 2.5: Verify Docker Compose is available
+      - name: 🔍 Check Docker Compose
+        run: |
+          echo "Checking Docker Compose version..."
+          docker compose version
 
       # Step 3: Create a test environment file
       - name: 📝 Create test .env file
@@ -37,13 +44,13 @@ jobs:
       - name: 🏗️ Build Docker containers
         run: |
           echo "Building all containers..."
-          docker-compose build
+          docker compose build
 
       # Step 5: Try to start everything
       - name: 🚀 Start containers
         run: |
           echo "Starting containers..."
-          docker-compose up -d
+          docker compose up -d
           
           # Wait a bit for everything to start
           echo "Waiting for services to start..."
@@ -69,18 +76,18 @@ jobs:
           fi
           
           # Show container status
-          docker-compose ps
+          docker compose ps
 
       # Step 7: Show logs if something went wrong
       - name: 📋 Show logs if failed
         if: failure()
         run: |
           echo "Something went wrong. Here are the logs:"
-          docker-compose logs
+          docker compose logs
 
       # Step 8: Clean up
       - name: 🧹 Clean up
         if: always()
         run: |
-          docker-compose down
+          docker compose down
           docker system prune -f
