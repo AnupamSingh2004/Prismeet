@@ -9,6 +9,8 @@ from django.conf import settings
 from django.db import transaction
 from google.oauth2 import id_token
 from google.auth.transport import requests
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
 import secrets
 import string
 
@@ -438,3 +440,11 @@ def send_password_reset_email(user):
         [user.email],
         fail_silently=False,
     )
+
+@require_http_methods(["GET"])
+def health_check(request):
+    """Simple health check endpoint"""
+    return JsonResponse({
+        'status': 'healthy',
+        'service': 'auth_service'
+    })

@@ -1,5 +1,5 @@
-// components/profile/ProfileStats.tsx
 'use client';
+
 import React from 'react';
 import { Calendar, PlayCircle, Users, Award } from 'lucide-react';
 import { StatItem } from '@/types/user';

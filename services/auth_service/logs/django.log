@@ -1272,3 +1272,23 @@ INFO 2025-06-07 05:12:27,788 basehttp 11 140311864010432 "PUT /api/auth/profile/
 INFO 2025-06-07 05:12:28,575 basehttp 11 140311864010432 "PUT /api/auth/profile/ HTTP/1.0" 200 607
 INFO 2025-06-07 05:12:55,974 basehttp 11 140311864010432 "POST /api/auth/logout/ HTTP/1.0" 200 31
 INFO 2025-06-07 05:13:07,556 basehttp 11 140311864010432 "POST /api/auth/google-auth/ HTTP/1.0" 200 710
+INFO 2025-06-07 06:09:54,188 basehttp 11 140311864010432 "GET /api/auth/profile/ HTTP/1.0" 200 605
+INFO 2025-06-07 06:10:25,229 basehttp 11 140311864010432 "OPTIONS /api/auth/logout/ HTTP/1.0" 200 0
+INFO 2025-06-07 06:10:25,249 basehttp 11 140311864010432 "POST /api/auth/logout/ HTTP/1.0" 200 31
+INFO 2025-06-07 06:10:31,668 basehttp 11 140311864010432 "POST /api/auth/google-auth/ HTTP/1.0" 200 712
+INFO 2025-06-07 06:11:47,137 basehttp 11 140311864010432 "GET /api/auth/profile/ HTTP/1.0" 200 607
+INFO 2025-06-07 06:12:34,120 basehttp 11 140311864010432 "GET /api/auth/profile/ HTTP/1.0" 200 607
+INFO 2025-06-07 06:14:28,172 basehttp 11 140311864010432 "GET /api/auth/profile/ HTTP/1.0" 200 607
+INFO 2025-06-07 06:16:02,465 autoreload 10 140387185232768 Watching for file changes with StatReloader
+INFO 2025-06-07 06:16:07,853 basehttp 10 140387103532736 "GET /api/auth/profile/ HTTP/1.0" 200 607
+INFO 2025-06-07 07:57:55,567 basehttp 10 140387103532736 "GET /api/auth/profile/ HTTP/1.0" 200 607
+INFO 2025-06-07 07:58:42,884 basehttp 10 140387103532736 "OPTIONS /api/auth/profile/ HTTP/1.0" 200 0
+INFO 2025-06-07 07:58:42,900 basehttp 10 140387103532736 "GET /api/auth/profile/ HTTP/1.0" 200 607
+INFO 2025-06-07 08:39:33,972 autoreload 10 140387185232768 /app/authentication/views.py changed, reloading.
+INFO 2025-06-07 08:39:34,817 autoreload 16 139795715459968 Watching for file changes with StatReloader
+INFO 2025-06-07 08:39:45,234 autoreload 16 139795715459968 /app/authentication/views.py changed, reloading.
+INFO 2025-06-07 08:39:45,897 autoreload 18 140499879332736 Watching for file changes with StatReloader
+INFO 2025-06-07 08:40:11,427 autoreload 18 140499879332736 /app/authentication/urls.py changed, reloading.
+INFO 2025-06-07 08:40:12,117 autoreload 20 139968575839104 Watching for file changes with StatReloader
+INFO 2025-06-07 08:40:22,496 autoreload 20 139968575839104 /app/authentication/urls.py changed, reloading.
+INFO 2025-06-07 08:40:23,288 autoreload 22 140651738573696 Watching for file changes with StatReloader

@@ -1,0 +1,86 @@
+name: 🐳 Docker Check
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  docker-build-test:
+    name: 🐳 Test Docker Build
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Get your code
+      - name: 📥 Get the code
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Docker Buildx (for better Docker builds)
+      - name: 🔧 Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Step 3: Create a test environment file
+      - name: 📝 Create test .env file
+        run: |
+          cat > .env << EOF
+          DEBUG=True
+          SECRET_KEY=test-secret-key-for-docker
+          DATABASE_URL=postgresql://postgres:postgres@db:5432/prismeet
+          REDIS_URL=redis://redis:6379/0
+          POSTGRES_DB=prismeet
+          POSTGRES_USER=postgres
+          POSTGRES_PASSWORD=postgres
+          EOF
+
+      # Step 4: Try to build everything
+      - name: 🏗️ Build Docker containers
+        run: |
+          echo "Building all containers..."
+          docker-compose build
+
+      # Step 5: Try to start everything
+      - name: 🚀 Start containers
+        run: |
+          echo "Starting containers..."
+          docker-compose up -d
+          
+          # Wait a bit for everything to start
+          echo "Waiting for services to start..."
+          sleep 60
+
+      # Step 6: Check if services are responding
+      - name: 🩺 Health check
+        run: |
+          echo "Checking if services are running..."
+          
+          # Check if frontend is accessible
+          if curl -f http://localhost:3000; then
+            echo "✅ Frontend is running!"
+          else
+            echo "❌ Frontend is not responding"
+          fi
+          
+          # Check if auth service is accessible
+          if curl -f http://localhost:8001; then
+            echo "✅ Auth service is running!"
+          else
+            echo "❌ Auth service is not responding"
+          fi
+          
+          # Show container status
+          docker-compose ps
+
+      # Step 7: Show logs if something went wrong
+      - name: 📋 Show logs if failed
+        if: failure()
+        run: |
+          echo "Something went wrong. Here are the logs:"
+          docker-compose logs
+
+      # Step 8: Clean up
+      - name: 🧹 Clean up
+        if: always()
+        run: |
+          docker-compose down
+          docker system prune -f

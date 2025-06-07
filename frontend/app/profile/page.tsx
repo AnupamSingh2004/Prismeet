@@ -30,6 +30,7 @@ import { NotificationToggle } from '@/components/profile/NotificationToggle';
 import { ProfilePicture } from '@/components/profile/ProfilePicture';
 import { ProfileStats } from '@/components/profile/ProfileStats';
 import { UserFormData, SelectOption } from '@/types/user';
+import Image from 'next/image';
 
 export default function ModernProfile() {
     const { user, loading, updateUser, logout } = useAuth();
@@ -38,6 +39,7 @@ export default function ModernProfile() {
     const [editingFields, setEditingFields] = useState<Set<string>>(new Set());
     const [isInitialized, setIsInitialized] = useState(false);
     const [activeTab, setActiveTab] = useState('profile');
+    const [imageError, setImageError] = useState(false);
 
     const [formData, setFormData] = useState<UserFormData>({
         first_name: '',
@@ -212,6 +214,10 @@ export default function ModernProfile() {
         router.push('/forgot-password');
     };
 
+    const handleImageError = () => {
+        setImageError(true);
+    };
+
     const handleProfilePictureUpload = () => {
         // Create a file input and trigger it
         const input = document.createElement('input');
@@ -223,6 +229,7 @@ export default function ModernProfile() {
                 // Handle file upload logic here
                 console.log('Profile picture selected:', file);
                 // You would typically upload this to your backend
+                // and then update the user's profile_picture field
             }
         };
         input.click();
@@ -242,6 +249,10 @@ export default function ModernProfile() {
     if (!user) {
         return null;
     }
+
+    // Check if user has a profile picture and it hasn't failed to load
+    const hasProfilePicture = user?.profile_picture && !imageError;
+    const userInitials = `${user?.first_name?.[0] || ''}${user?.last_name?.[0] || ''}`;
 
     const timezoneOptions: SelectOption[] = [
         { value: '', label: 'Select Timezone' },
@@ -273,28 +284,6 @@ export default function ModernProfile() {
     return (
         <AuthGuard requireAuth={true}>
             <div className="min-h-screen bg-gray-900">
-                {/* Header */}
-                {/*<div className="bg-gray-800/50 border-b border-gray-700/50 backdrop-blur-sm sticky top-0 z-10">*/}
-                {/*    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">*/}
-                {/*        <div className="flex items-center justify-between h-16">*/}
-                {/*            <div className="flex items-center space-x-4">*/}
-                {/*                <div className="flex items-center space-x-3">*/}
-                {/*                    <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">*/}
-                {/*                        <Settings className="w-5 h-5 text-white" />*/}
-                {/*                    </div>*/}
-                {/*                    <h1 className="text-xl font-semibold text-white">Settings</h1>*/}
-                {/*                </div>*/}
-                {/*            </div>*/}
-                {/*            <button*/}
-                {/*                onClick={logout}*/}
-                {/*                className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-gray-700/50 rounded-lg transition-all duration-200"*/}
-                {/*            >*/}
-                {/*                <LogOut className="w-4 h-4" />*/}
-                {/*                <span>Sign out</span>*/}
-                {/*            </button>*/}
-                {/*        </div>*/}
-                {/*    </div>*/}
-                {/*</div>*/}
 
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -332,11 +321,24 @@ export default function ModernProfile() {
                                         {/* Profile Picture */}
                                         <div className="flex items-center space-x-6 mb-10">
                                             <div className="relative group">
-                                                <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-2xl">
-                                                    <span className="text-2xl font-bold text-white">
-                                                        {user.first_name?.[0]}{user.last_name?.[0]}
-                                                    </span>
-                                                </div>
+                                                {hasProfilePicture ? (
+                                                    <div className="w-24 h-24 relative rounded-2xl overflow-hidden shadow-2xl">
+                                                        <Image
+                                                            src={user.profile_picture!}
+                                                            alt={`${user.first_name} ${user.last_name}`}
+                                                            fill
+                                                            className="object-cover transition-transform group-hover:scale-105"
+                                                            onError={handleImageError}
+                                                            unoptimized={true}
+                                                        />
+                                                    </div>
+                                                ) : (
+                                                    <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                                                        <span className="text-2xl font-bold text-white">
+                                                            {userInitials}
+                                                        </span>
+                                                    </div>
+                                                )}
                                                 <button
                                                     onClick={handleProfilePictureUpload}
                                                     className="absolute -bottom-2 -right-2 w-10 h-10 bg-purple-600 hover:bg-purple-700 rounded-xl flex items-center justify-center text-white transition-all duration-200 shadow-lg hover:shadow-purple-500/25 group-hover:scale-110"

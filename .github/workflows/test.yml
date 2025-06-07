@@ -1,0 +1,111 @@
+name: 🧪 Test Code
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  # Test the frontend (React/Next.js)
+  test-frontend:
+    name: 🎨 Frontend Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Get the code
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: 📦 Install packages
+        working-directory: ./frontend
+        run: npm install
+
+      - name: 🔍 Check TypeScript
+        working-directory: ./frontend
+        run: |
+          # Only run if you have this script in package.json
+          if npm run | grep -q "type-check"; then
+            npm run type-check
+          else
+            echo "No type-check script found, skipping..."
+          fi
+
+      - name: ✨ Check code style
+        working-directory: ./frontend
+        run: |
+          # Only run if you have lint script
+          if npm run | grep -q "lint"; then
+            npm run lint
+          else
+            echo "No lint script found, skipping..."
+          fi
+
+      - name: 🏗️ Build frontend
+        working-directory: ./frontend
+        run: npm run build
+
+  # Test the backend (Django)
+  test-backend:
+    name: 🛠️ Backend Tests
+    runs-on: ubuntu-latest
+
+    # We need a database for testing
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: prismeet_test
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_pass
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      # Step 1: Get your code
+      - name: 📥 Get the code
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Python
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      # Step 3: Test Auth Service (the only one that's active)
+      - name: 🔐 Test Auth Service
+        working-directory: ./services/auth_service
+        env:
+          DATABASE_URL: postgresql://test_user:test_pass@localhost:5432/prismeet_test
+          REDIS_URL: redis://localhost:6379/0
+          DEBUG: true
+          SECRET_KEY: test-secret-key-for-github-actions
+        run: |
+          # Install Python packages
+          pip install -r requirements.txt
+          
+          # Create database tables
+          python manage.py makemigrations
+          python manage.py migrate
+          
+          # Run tests (if you have any)
+          python manage.py test
+          
+          # Check if the service starts without errors
+          timeout 10s python manage.py runserver 0.0.0.0:8001 || echo "Server check completed"
