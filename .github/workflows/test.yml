@@ -99,11 +99,20 @@ jobs:
       - name: 🔐 Test Auth Service
         working-directory: ./services/auth_service
         env:
+          # Database configuration
           DATABASE_URL: postgresql://test_user:test_pass@localhost:5432/prismeet_test
+          POSTGRES_DB: prismeet_test
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_pass
+          # Redis configuration
           REDIS_URL: redis://localhost:6379/0
+          # Django configuration
           DEBUG: true
           DJANGO_SECRET_KEY: test-secret-key-for-github-actions-very-long-and-secure
           SECRET_KEY: test-secret-key-for-github-actions-very-long-and-secure
+          # Frontend URLs (if needed)
+          NEXT_PUBLIC_API_URL: http://localhost:80
+          NEXT_PUBLIC_AUTH_SERVICE_URL: http://localhost:80/api/auth
         run: |
           # Install Python packages
           pip install -r requirements.txt
