@@ -14,7 +14,6 @@ export default function Home() {
         // Optional: redirect somewhere if logged in
     }, [user, loading, router]);
 
-    // Debug logging
     useEffect(() => {
         if (user) {
             console.log('User profile picture URL:', user.profile_picture);
@@ -38,7 +37,6 @@ export default function Home() {
         if (value === null || value === undefined) return 'Not set';
         if (typeof value === 'boolean') return value ? 'Yes' : 'No';
         if (key.includes('at') && typeof value === 'string') {
-            // Format dates
             try {
                 return new Date(value).toLocaleString();
             } catch {
@@ -49,7 +47,6 @@ export default function Home() {
     };
 
     const shouldDisplayField = (key: string, value: string | boolean | null | undefined) => {
-        // Hide sensitive or unnecessary fields
         const hiddenFields = ['password', 'token', 'id'];
         return !hiddenFields.some(field => key.toLowerCase().includes(field)) &&
             value !== null &&
@@ -69,7 +66,7 @@ export default function Home() {
             return (
                 <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-gray-200">
                     <Image
-                        src={user.profile_picture}
+                        src={user.profile_picture!}
                         alt={`${user.first_name} ${user.last_name}`}
                         fill
                         className="object-cover"
@@ -102,7 +99,6 @@ export default function Home() {
                 <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 space-y-6">
                     {user ? (
                         <>
-                            {/* Profile Header */}
                             <div className="text-center">
                                 <div className="flex justify-center mb-4">
                                     <ProfilePicture />

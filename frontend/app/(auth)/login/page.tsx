@@ -94,6 +94,12 @@ export default function LoginPage() {
                                 onError={(error) => console.log(error.message)}
                             />
 
+                            <div className="flex items-center justify-between">
+                                <Link href="/forgot-password" className="text-sm text-indigo-600 hover:text-indigo-500">
+                                    Forgot your password?
+                                </Link>
+                            </div>
+
                             <div className="text-center">
                                 <Link href="/register" className="text-indigo-600 hover:text-indigo-500">
                                     Do not have an account? Sign up
