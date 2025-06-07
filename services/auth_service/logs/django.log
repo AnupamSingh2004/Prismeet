@@ -1292,3 +1292,4 @@ INFO 2025-06-07 08:40:11,427 autoreload 18 140499879332736 /app/authentication/u
 INFO 2025-06-07 08:40:12,117 autoreload 20 139968575839104 Watching for file changes with StatReloader
 INFO 2025-06-07 08:40:22,496 autoreload 20 139968575839104 /app/authentication/urls.py changed, reloading.
 INFO 2025-06-07 08:40:23,288 autoreload 22 140651738573696 Watching for file changes with StatReloader
+INFO 2025-06-07 09:06:49,360 basehttp 22 140651589007040 "GET /api/auth/profile/ HTTP/1.0" 200 607

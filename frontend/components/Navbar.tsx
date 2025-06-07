@@ -10,7 +10,7 @@ const Navbar = () => {
     const { user, logout, isAuthenticated } = useAuth();
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const profileDropdownRef = useRef(null);
+    const profileDropdownRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
 
     const navItems = [
@@ -21,8 +21,8 @@ const Navbar = () => {
 
     // Handle clicks outside profile dropdown
     useEffect(() => {
-        const handleClickOutside = (event: { target: any; }) => {
-            if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
                 setIsProfileOpen(false);
             }
         };
