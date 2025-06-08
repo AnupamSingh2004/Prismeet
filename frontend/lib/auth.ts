@@ -151,6 +151,73 @@ export class AuthService {
         return updatedUser;
     }
 
+    // New method for profile picture upload
+    static async uploadProfilePicture(file: File): Promise<User> {
+        const token = this.getToken();
+        if (!token) {
+            throw new Error('No authentication token');
+        }
+
+        // Convert file to base64
+        const base64 = await this.fileToBase64(file);
+
+        const response = await fetch(`${API_BASE_URL}/api/auth/profile/picture/upload/`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Token ${token}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                profile_picture: base64
+            }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Profile picture upload failed');
+        }
+
+        // Get updated user profile
+        const updatedUser = await this.getProfile();
+        this.storeUser(updatedUser);
+        return updatedUser;
+    }
+
+    // New method to delete profile picture
+    static async deleteProfilePicture(): Promise<User> {
+        const token = this.getToken();
+        if (!token) {
+            throw new Error('No authentication token');
+        }
+
+        const response = await fetch(`${API_BASE_URL}/api/auth/profile/picture/delete/`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Token ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Failed to delete profile picture');
+        }
+
+        // Get updated user profile
+        const updatedUser = await this.getProfile();
+        this.storeUser(updatedUser);
+        return updatedUser;
+    }
+
+    // Helper method to convert file to base64
+    private static fileToBase64(file: File): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = error => reject(error);
+        });
+    }
+
     static getToken(): string | null {
         if (typeof window === 'undefined') return null;
         return localStorage.getItem(this.TOKEN_KEY);

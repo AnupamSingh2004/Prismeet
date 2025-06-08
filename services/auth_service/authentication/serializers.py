@@ -11,8 +11,115 @@ from .models import User, UserProfile
 import secrets
 import string
 import logging
+import base64
+from PIL import Image
+import io
 
 logger = logging.getLogger(__name__)
+
+class ProfilePictureUploadSerializer(serializers.Serializer):
+    """
+    Serializer for profile picture upload
+    """
+    profile_picture = serializers.CharField()  # Base64 encoded image
+
+    def validate_profile_picture(self, value):
+        try:
+            # Check if it's a valid base64 data URL
+            if not value.startswith('data:image/'):
+                raise serializers.ValidationError("Invalid image format. Must be a data URL.")
+
+            # Extract content type and base64 data
+            header, data = value.split(',', 1)
+            content_type = header.split(':')[1].split(';')[0]
+
+            # Validate content type
+            allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+            if content_type not in allowed_types:
+                raise serializers.ValidationError(
+                    f"Unsupported image type. Allowed: {', '.join(allowed_types)}"
+                )
+
+            # Decode base64 data
+            try:
+                image_data = base64.b64decode(data)
+            except Exception:
+                raise serializers.ValidationError("Invalid base64 data.")
+
+            # Validate image size (max 5MB)
+            if len(image_data) > 5 * 1024 * 1024:
+                raise serializers.ValidationError("Image size must be less than 5MB.")
+
+            # Validate that it's actually an image using PIL
+            try:
+                image = Image.open(io.BytesIO(image_data))
+                image.verify()
+            except Exception:
+                raise serializers.ValidationError("Invalid image file.")
+
+            return {
+                'data': image_data,
+                'content_type': content_type,
+                'size': len(image_data)
+            }
+
+        except ValueError as e:
+            raise serializers.ValidationError("Invalid image format.")
+
+    def save(self, user):
+        validated_data = self.validated_data['profile_picture']
+
+        # Resize image if too large (optional optimization)
+        image_data = self._resize_image_if_needed(
+            validated_data['data'],
+            validated_data['content_type']
+        )
+
+        # Set profile picture
+        user.set_profile_picture(
+            file_data=image_data,
+            content_type=validated_data['content_type'],
+            filename=f"profile_{user.id}.{validated_data['content_type'].split('/')[-1]}"
+        )
+        user.save()
+        return user
+
+    def _resize_image_if_needed(self, image_data, content_type, max_size=(800, 800)):
+        """Resize image if it's too large"""
+        try:
+            image = Image.open(io.BytesIO(image_data))
+
+            # Only resize if image is larger than max_size
+            if image.size[0] > max_size[0] or image.size[1] > max_size[1]:
+                image.thumbnail(max_size, Image.Resampling.LANCZOS)
+
+                # Save resized image to bytes
+                output = io.BytesIO()
+                format_map = {
+                    'image/jpeg': 'JPEG',
+                    'image/jpg': 'JPEG',
+                    'image/png': 'PNG',
+                    'image/gif': 'GIF',
+                    'image/webp': 'WEBP'
+                }
+
+                image_format = format_map.get(content_type, 'JPEG')
+
+                # Convert RGBA to RGB for JPEG
+                if image_format == 'JPEG' and image.mode == 'RGBA':
+                    background = Image.new('RGB', image.size, (255, 255, 255))
+                    background.paste(image, mask=image.split()[-1] if len(image.split()) == 4 else None)
+                    image = background
+
+                image.save(output, format=image_format, quality=85, optimize=True)
+                return output.getvalue()
+
+            return image_data
+
+        except Exception as e:
+            logger.error(f"Error resizing image: {str(e)}")
+            return image_data
+
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     """
@@ -148,6 +255,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     """
     full_name = serializers.ReadOnlyField()
     profile = serializers.SerializerMethodField()
+    profile_picture = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -158,6 +266,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'provider', 'created_at', 'last_login_at', 'profile'
         ]
         read_only_fields = ['id', 'email', 'provider', 'created_at', 'is_email_verified']
+
+    def get_profile_picture(self, obj):
+        """Return base64 encoded profile picture or None"""
+        return obj.profile_picture_base64
 
     def get_profile(self, obj):
         try:
@@ -173,18 +285,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
             }
         except UserProfile.DoesNotExist:
             return None
-
-    def to_representation(self, instance):
-        """
-        Customize the representation to ensure profile_picture is always included
-        """
-        data = super().to_representation(instance)
-
-        # Ensure profile_picture is included even if it's an empty string
-        if 'profile_picture' not in data or data['profile_picture'] is None:
-            data['profile_picture'] = ''
-
-        return data
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile', {})
@@ -202,6 +302,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             profile.save()
 
         return instance
+
 
 class PasswordChangeSerializer(serializers.Serializer):
     """

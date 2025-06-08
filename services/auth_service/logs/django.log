@@ -1294,3 +1294,289 @@ INFO 2025-06-07 08:40:22,496 autoreload 20 139968575839104 /app/authentication/u
 INFO 2025-06-07 08:40:23,288 autoreload 22 140651738573696 Watching for file changes with StatReloader
 INFO 2025-06-07 09:06:49,360 basehttp 22 140651589007040 "GET /api/auth/profile/ HTTP/1.0" 200 607
 INFO 2025-06-07 09:54:54,126 autoreload 11 140070676814720 Watching for file changes with StatReloader
+INFO 2025-06-08 04:12:42,400 autoreload 11 140454453898112 Watching for file changes with StatReloader
+INFO 2025-06-08 04:12:49,953 basehttp 11 140454371780288 "OPTIONS /api/auth/profile/ HTTP/1.0" 200 0
+INFO 2025-06-08 04:12:49,975 basehttp 11 140454371780288 "GET /api/auth/profile/ HTTP/1.0" 200 607
+INFO 2025-06-08 04:13:00,035 basehttp 11 140454371780288 "GET /api/auth/profile/ HTTP/1.0" 200 607
+INFO 2025-06-08 04:13:03,360 basehttp 11 140454371780288 "GET /api/auth/profile/ HTTP/1.0" 200 607
+INFO 2025-06-08 04:16:11,802 basehttp 11 140454371780288 "GET /api/auth/profile/ HTTP/1.0" 200 607
+INFO 2025-06-08 04:32:33,699 autoreload 11 140630198451072 Watching for file changes with StatReloader
+INFO 2025-06-08 04:32:38,005 basehttp 11 140630047061696 "GET /api/auth/profile/ HTTP/1.0" 200 607
+INFO 2025-06-08 04:41:30,866 autoreload 11 140630198451072 /app/authentication/models.py changed, reloading.
+INFO 2025-06-08 04:41:31,604 autoreload 14 140190893792128 Watching for file changes with StatReloader
+INFO 2025-06-08 04:42:07,293 autoreload 14 140190893792128 /app/authentication/serializers.py changed, reloading.
+INFO 2025-06-08 04:42:07,965 autoreload 16 140524318063488 Watching for file changes with StatReloader
+INFO 2025-06-08 04:48:53,460 autoreload 16 140524318063488 /app/authentication/views.py changed, reloading.
+INFO 2025-06-08 04:48:54,192 autoreload 18 139743850896256 Watching for file changes with StatReloader
+INFO 2025-06-08 04:49:19,749 autoreload 18 139743850896256 /app/authentication/urls.py changed, reloading.
+INFO 2025-06-08 04:49:20,364 autoreload 20 140141597469568 Watching for file changes with StatReloader
+ERROR 2025-06-08 04:54:58,692 log 20 140141512357568 Internal Server Error: /api/auth/profile/
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedColumn: column auth_user.profile_picture_data does not exist
+LINE 1: ...auth_user"."first_name", "auth_user"."last_name", "auth_user...
+                                                             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 414, in initial
+    self.perform_authentication(request)
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 324, in perform_authentication
+    request.user
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/request.py", line 231, in user
+    self._authenticate()
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/request.py", line 384, in _authenticate
+    user_auth_tuple = authenticator.authenticate(self)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/authentication.py", line 196, in authenticate
+    return self.authenticate_credentials(token)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/authentication.py", line 201, in authenticate_credentials
+    token = model.objects.select_related('user').get(key=key)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 629, in get
+    num = len(clone)
+          ^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 366, in __len__
+    self._fetch_all()
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 1945, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.11/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.ProgrammingError: column auth_user.profile_picture_data does not exist
+LINE 1: ...auth_user"."first_name", "auth_user"."last_name", "auth_user...
+                                                             ^
+
+ERROR 2025-06-08 04:54:58,696 basehttp 20 140141512357568 "GET /api/auth/profile/ HTTP/1.0" 500 182755
+INFO 2025-06-08 04:54:58,700 basehttp 20 140141512357568 "OPTIONS /api/auth/logout/ HTTP/1.0" 200 0
+ERROR 2025-06-08 04:54:58,731 log 20 140141512357568 Internal Server Error: /api/auth/logout/
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedColumn: column auth_user.profile_picture_data does not exist
+LINE 1: ...auth_user"."first_name", "auth_user"."last_name", "auth_user...
+                                                             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 497, in dispatch
+    self.initial(request, *args, **kwargs)
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 414, in initial
+    self.perform_authentication(request)
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 324, in perform_authentication
+    request.user
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/request.py", line 231, in user
+    self._authenticate()
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/request.py", line 384, in _authenticate
+    user_auth_tuple = authenticator.authenticate(self)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/authentication.py", line 196, in authenticate
+    return self.authenticate_credentials(token)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/authentication.py", line 201, in authenticate_credentials
+    token = model.objects.select_related('user').get(key=key)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 629, in get
+    num = len(clone)
+          ^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 366, in __len__
+    self._fetch_all()
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 1945, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.11/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.ProgrammingError: column auth_user.profile_picture_data does not exist
+LINE 1: ...auth_user"."first_name", "auth_user"."last_name", "auth_user...
+                                                             ^
+
+ERROR 2025-06-08 04:54:58,733 basehttp 20 140141512357568 "POST /api/auth/logout/ HTTP/1.0" 500 182745
+INFO 2025-06-08 04:55:13,460 basehttp 20 140141512357568 "OPTIONS /api/auth/google-auth/ HTTP/1.0" 200 0
+ERROR 2025-06-08 04:55:13,589 log 20 140141512357568 Internal Server Error: /api/auth/google-auth/
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UndefinedColumn: column auth_user.profile_picture_data does not exist
+LINE 1: ...auth_user"."first_name", "auth_user"."last_name", "auth_user...
+                                                             ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/authentication/views.py", line 146, in google_auth
+    user = User.objects.get(email=email)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 629, in get
+    num = len(clone)
+          ^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 366, in __len__
+    self._fetch_all()
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 1945, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/sql/compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.11/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.ProgrammingError: column auth_user.profile_picture_data does not exist
+LINE 1: ...auth_user"."first_name", "auth_user"."last_name", "auth_user...
+                                                             ^
+
+ERROR 2025-06-08 04:55:13,592 basehttp 20 140141512357568 "POST /api/auth/google-auth/ HTTP/1.0" 500 172689
+INFO 2025-06-08 05:04:45,767 autoreload 11 140714672028544 Watching for file changes with StatReloader
+INFO 2025-06-08 05:04:59,625 basehttp 11 140714587453120 "POST /api/auth/google-auth/ HTTP/1.0" 200 618
+INFO 2025-06-08 05:05:11,882 basehttp 11 140714587453120 "OPTIONS /api/auth/profile/picture/upload/ HTTP/1.0" 200 0
+INFO 2025-06-08 05:05:12,081 views 11 140714587453120 Profile picture uploaded successfully for user sanupam2004@gmail.com
+INFO 2025-06-08 05:05:12,083 basehttp 11 140714587453120 "POST /api/auth/profile/picture/upload/ HTTP/1.0" 200 110982
+INFO 2025-06-08 05:05:12,105 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 111421
+INFO 2025-06-08 05:09:17,616 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 111421
+INFO 2025-06-08 05:09:32,242 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 111421
+INFO 2025-06-08 05:10:56,437 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 111421
+INFO 2025-06-08 05:11:03,703 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 111421
+INFO 2025-06-08 05:11:07,968 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 111421
+INFO 2025-06-08 05:11:11,268 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 111421
+INFO 2025-06-08 05:11:16,881 basehttp 11 140714587453120 "OPTIONS /api/auth/profile/picture/delete/ HTTP/1.0" 200 0
+INFO 2025-06-08 05:11:16,908 views 11 140714587453120 Profile picture deleted successfully for user sanupam2004@gmail.com
+INFO 2025-06-08 05:11:16,909 basehttp 11 140714587453120 "DELETE /api/auth/profile/picture/delete/ HTTP/1.0" 200 50
+INFO 2025-06-08 05:11:16,922 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 513
+INFO 2025-06-08 05:11:16,936 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 513
+INFO 2025-06-08 05:11:30,772 views 11 140714587453120 Profile picture uploaded successfully for user sanupam2004@gmail.com
+INFO 2025-06-08 05:11:30,779 basehttp 11 140714587453120 "POST /api/auth/profile/picture/upload/ HTTP/1.0" 200 649586
+INFO 2025-06-08 05:11:30,810 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 650025
+INFO 2025-06-08 05:11:30,855 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 650025
+INFO 2025-06-08 05:11:35,861 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 650025
+INFO 2025-06-08 05:11:55,464 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 650025
+INFO 2025-06-08 05:13:47,313 basehttp 11 140714587453120 "PUT /api/auth/profile/ HTTP/1.0" 200 650025

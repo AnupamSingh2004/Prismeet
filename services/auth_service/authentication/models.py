@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
 import uuid
+import base64
 
 class User(AbstractUser):
     """
@@ -16,7 +17,12 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
-    profile_picture = models.URLField(blank=True, null=True)
+
+    # Store profile picture as binary data instead of URL
+    profile_picture_data = models.BinaryField(blank=True, null=True)
+    profile_picture_content_type = models.CharField(max_length=50, blank=True, null=True)
+    profile_picture_filename = models.CharField(max_length=255, blank=True, null=True)
+
     phone_number = models.CharField(max_length=15, blank=True, null=True)
 
     # Authentication related fields
@@ -54,6 +60,26 @@ class User(AbstractUser):
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}".strip()
+
+    @property
+    def profile_picture_base64(self):
+        """Return base64 encoded profile picture for frontend use"""
+        if self.profile_picture_data and self.profile_picture_content_type:
+            encoded = base64.b64encode(self.profile_picture_data).decode('utf-8')
+            return f"data:{self.profile_picture_content_type};base64,{encoded}"
+        return None
+
+    def set_profile_picture(self, file_data, content_type, filename):
+        """Set profile picture from uploaded file"""
+        self.profile_picture_data = file_data
+        self.profile_picture_content_type = content_type
+        self.profile_picture_filename = filename
+
+    def clear_profile_picture(self):
+        """Remove profile picture"""
+        self.profile_picture_data = None
+        self.profile_picture_content_type = None
+        self.profile_picture_filename = None
 
     def save(self, *args, **kwargs):
         if not self.username:

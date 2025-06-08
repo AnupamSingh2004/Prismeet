@@ -13,6 +13,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 import secrets
 import string
+import logging
 
 from .models import User, UserProfile, LoginAttempt
 from .serializers import (
@@ -23,8 +24,11 @@ from .serializers import (
     PasswordChangeSerializer,
     PasswordResetRequestSerializer,
     PasswordResetConfirmSerializer,
-    EmailVerificationSerializer
+    EmailVerificationSerializer,
+    ProfilePictureUploadSerializer
 )
+
+logger = logging.getLogger(__name__)
 
 def get_client_ip(request):
     """Get client IP address"""
@@ -140,18 +144,13 @@ def google_auth(request):
             # Check if user exists
             try:
                 user = User.objects.get(email=email)
-                # Update Google info and profile picture for existing users
+                # Update Google info for existing users
                 user_updated = False
 
                 if not user.google_id:
                     user.google_id = google_id
                     user.provider = 'google'
                     user.is_email_verified = True
-                    user_updated = True
-
-                # Always update profile picture if available from Google
-                if profile_picture and user.profile_picture != profile_picture:
-                    user.profile_picture = profile_picture
                     user_updated = True
 
                 # Update first/last name if they're empty
@@ -175,7 +174,6 @@ def google_auth(request):
                         first_name=first_name,
                         last_name=last_name,
                         google_id=google_id,
-                        profile_picture=profile_picture,  # Make sure this is set
                         provider='google',
                         is_email_verified=True,
                         is_active=True
@@ -236,6 +234,92 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def upload_profile_picture(request):
+    """
+    Upload profile picture
+    """
+    serializer = ProfilePictureUploadSerializer(data=request.data)
+
+    if serializer.is_valid():
+        try:
+            user = serializer.save(user=request.user)
+
+            logger.info(f"Profile picture uploaded successfully for user {user.email}")
+
+            return Response({
+                'message': 'Profile picture uploaded successfully',
+                'profile_picture': user.profile_picture_base64
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            logger.error(f"Error uploading profile picture for user {request.user.email}: {str(e)}")
+            return Response({
+                'error': 'Failed to upload profile picture'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+@permission_classes([permissions.IsAuthenticated])
+def delete_profile_picture(request):
+    """
+    Delete profile picture
+    """
+    try:
+        user = request.user
+
+        if not user.profile_picture_data:
+            return Response({
+                'message': 'No profile picture to delete'
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        # Clear profile picture
+        user.clear_profile_picture()
+        user.save()
+
+        logger.info(f"Profile picture deleted successfully for user {user.email}")
+
+        return Response({
+            'message': 'Profile picture deleted successfully'
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        logger.error(f"Error deleting profile picture for user {request.user.email}: {str(e)}")
+        return Response({
+            'error': 'Failed to delete profile picture'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def get_profile_picture(request):
+    """
+    Get profile picture (alternative endpoint if needed)
+    """
+    try:
+        user = request.user
+
+        if not user.profile_picture_data:
+            return Response({
+                'profile_picture': None
+            }, status=status.HTTP_200_OK)
+
+        return Response({
+            'profile_picture': user.profile_picture_base64,
+            'content_type': user.profile_picture_content_type,
+            'filename': user.profile_picture_filename
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        logger.error(f"Error getting profile picture for user {request.user.email}: {str(e)}")
+        return Response({
+            'error': 'Failed to get profile picture'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['POST'])

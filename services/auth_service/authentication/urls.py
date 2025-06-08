@@ -4,8 +4,9 @@ from . import views
 app_name = 'authentication'
 
 urlpatterns = [
-    #Simple Health Check
+    # Simple Health Check
     path('health/', views.health_check, name='health'),
+
     # Authentication endpoints
     path('register/', views.register, name='register'),
     path('login/', views.login_view, name='login'),
@@ -14,6 +15,11 @@ urlpatterns = [
 
     # Profile endpoints
     path('profile/', views.UserProfileView.as_view(), name='profile'),
+
+    # Profile picture endpoints
+    path('profile/picture/upload/', views.upload_profile_picture, name='upload_profile_picture'),
+    path('profile/picture/delete/', views.delete_profile_picture, name='delete_profile_picture'),
+    path('profile/picture/', views.get_profile_picture, name='get_profile_picture'),
 
     # Password management
     path('change-password/', views.change_password, name='change_password'),

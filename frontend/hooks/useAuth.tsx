@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-import { User } from '@/types/auth';
+import { User, RegisterRequest } from '@/types/auth';
 import { AuthService } from '@/lib/auth';
 import { GoogleAuth } from '@/lib/googleAuth';
 
@@ -9,10 +9,11 @@ interface AuthContextType {
     user: User | null;
     loading: boolean;
     login: (email: string, password: string) => Promise<void>;
-    register: (data: any) => Promise<void>;
+    register: (data: RegisterRequest) => Promise<void>;
     googleLogin: (token: string) => Promise<void>;
     logout: () => Promise<void>;
     updateUser: (data: Partial<User>) => Promise<void>;
+    refreshUser: () => Promise<void>; // Added this missing method
     isAuthenticated: boolean;
 }
 
@@ -36,11 +37,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     const currentUser = AuthService.getCurrentUser();
                     if (currentUser) {
                         try {
-                            // Verify token is still valid by fetching fresh profile
                             const freshUser = await AuthService.getProfile();
                             setUser(freshUser);
-                        } catch (error) {
-                            // Token expired or invalid
+                        } catch{
                             await AuthService.logout();
                         }
                     }
@@ -60,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(response.user);
     };
 
-    const register = async (data: any) => {
+    const register = async (data: RegisterRequest) => {
         const response = await AuthService.register(data);
         setUser(response.user);
     };
@@ -85,6 +84,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(updatedUser);
     };
 
+    // Added the missing refreshUser method
+    const refreshUser = async () => {
+        try {
+            if (AuthService.isAuthenticated()) {
+                const freshUser = await AuthService.getProfile();
+                setUser(freshUser);
+            }
+        } catch (error) {
+            console.error('Failed to refresh user:', error);
+            // If refresh fails, user might be logged out
+            await AuthService.logout();
+            setUser(null);
+        }
+    };
+
     return (
         <AuthContext.Provider
             value={{
@@ -95,6 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 googleLogin,
                 logout,
                 updateUser,
+                refreshUser, // Added to the provider value
                 isAuthenticated: !!user,
             }}
         >

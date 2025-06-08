@@ -1,6 +1,6 @@
 // types/user.ts
 export interface User {
-    id: string; // Changed from number to string (UUID)
+    id: string; // UUID
     email: string;
     first_name: string;
     last_name: string;
@@ -33,33 +33,6 @@ export interface UserFormData {
     timezone: string;
     default_meeting_duration: number;
     profile: UserProfile;
-}
-
-export interface LoginRequest {
-    email: string;
-    password: string;
-}
-
-export interface RegisterRequest {
-    email: string;
-    first_name: string;
-    last_name: string;
-    password: string;
-    confirm_password: string;
-    phone_number?: string;
-}
-
-export interface AuthResponse {
-    user: User;
-    token: string;
-    message: string;
-}
-
-export interface ApiError {
-    detail?: string;
-    error?: string;
-    non_field_errors?: string[];
-    [key: string]: any;
 }
 
 export interface SelectOption {

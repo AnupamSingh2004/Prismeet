@@ -1,27 +1,5 @@
-export interface User {
-    id: number;
-    email: string;
-    first_name: string;
-    last_name: string;
-    full_name: string;
-    profile_picture?: string;
-    phone_number?: string;
-    timezone?: string;
-    default_meeting_duration?: number;
-    is_email_verified: boolean;
-    provider: string;
-    created_at: string;
-    last_login_at?: string;
-    profile?: {
-        bio?: string;
-        company?: string;
-        job_title?: string;
-        website?: string;
-        email_notifications: boolean;
-        meeting_reminders: boolean;
-        recording_notifications: boolean;
-    };
-}
+// types/auth.ts
+import { User } from './user';
 
 export interface LoginRequest {
     email: string;
@@ -49,3 +27,6 @@ export interface ApiError {
     non_field_errors?: string[];
     [key: string]: any;
 }
+
+// Re-export User for convenience
+export type { User };
