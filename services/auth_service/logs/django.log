@@ -1580,3 +1580,11 @@ INFO 2025-06-08 05:11:30,855 basehttp 11 140714587453120 "GET /api/auth/profile/
 INFO 2025-06-08 05:11:35,861 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 650025
 INFO 2025-06-08 05:11:55,464 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 650025
 INFO 2025-06-08 05:13:47,313 basehttp 11 140714587453120 "PUT /api/auth/profile/ HTTP/1.0" 200 650025
+INFO 2025-06-08 05:19:47,038 views 11 140714587453120 Profile picture deleted successfully for user sanupam2004@gmail.com
+INFO 2025-06-08 05:19:47,039 basehttp 11 140714587453120 "DELETE /api/auth/profile/picture/delete/ HTTP/1.0" 200 50
+INFO 2025-06-08 05:19:47,056 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 513
+INFO 2025-06-08 05:19:47,075 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 513
+INFO 2025-06-08 05:20:00,781 views 11 140714587453120 Profile picture uploaded successfully for user sanupam2004@gmail.com
+INFO 2025-06-08 05:20:00,784 basehttp 11 140714587453120 "POST /api/auth/profile/picture/upload/ HTTP/1.0" 200 158755
+INFO 2025-06-08 05:20:00,805 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 159194
+INFO 2025-06-08 05:20:00,828 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 159194
