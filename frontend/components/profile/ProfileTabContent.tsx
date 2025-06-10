@@ -37,7 +37,7 @@ export const ProfileTabContent: React.FC<ProfileTabContentProps> = ({
                 <ProfileHeader
                     user={user}
                     formData={formData}
-                    onProfilePictureUpload={onProfilePictureUpload}
+                    onProfilePictureUpdate={onProfilePictureUpload}
                 />
 
                 <ProfileBasicInfo
