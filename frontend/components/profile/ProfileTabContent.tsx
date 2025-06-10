@@ -54,4 +54,4 @@ export const ProfileTabContent: React.FC<ProfileTabContentProps> = ({
             </div>
         </div>
     );
-};
+};  
