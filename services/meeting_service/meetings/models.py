@@ -5,11 +5,12 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 import uuid
 import secrets
 import string
+import json
 
 
 class Meeting(models.Model):
     """
-    Main meeting model for Prismeet
+    Main meeting model for Prismeet with WebRTC support
     """
     STATUS_CHOICES = [
         ('scheduled', 'Scheduled'),
@@ -56,6 +57,18 @@ class Meeting(models.Model):
     allow_participants_to_share_screen = models.BooleanField(default=True)
     allow_participants_to_record = models.BooleanField(default=False)
 
+    # WebRTC and Media Server Settings
+    room_id = models.CharField(max_length=255, unique=True, blank=True)  # For media server
+    signaling_server_url = models.URLField(blank=True, null=True)
+    streaming_key = models.CharField(max_length=255, blank=True)
+    ice_servers = models.TextField(blank=True, default='[]')  # JSON string of ICE servers
+    media_server_endpoint = models.URLField(blank=True, null=True)
+
+    # Recording settings
+    recording_server_url = models.URLField(blank=True, null=True)
+    recording_format = models.CharField(max_length=10, default='mp4')
+    recording_quality = models.CharField(max_length=10, default='1080p')
+
     # Metadata
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -64,6 +77,7 @@ class Meeting(models.Model):
         ordering = ['-created_at']
         indexes = [
             models.Index(fields=['meeting_id']),
+            models.Index(fields=['room_id']),
             models.Index(fields=['host', 'status']),
             models.Index(fields=['scheduled_start_time']),
         ]
@@ -74,6 +88,8 @@ class Meeting(models.Model):
     def save(self, *args, **kwargs):
         if not self.meeting_id:
             self.meeting_id = self.generate_meeting_id()
+        if not self.room_id:
+            self.room_id = self.generate_room_id()
         if self.is_password_protected and not self.meeting_password:
             self.meeting_password = self.generate_meeting_password()
         super().save(*args, **kwargs)
@@ -85,9 +101,25 @@ class Meeting(models.Model):
             if not Meeting.objects.filter(meeting_id=meeting_id).exists():
                 return meeting_id
 
+    def generate_room_id(self):
+        """Generate a unique room ID for media server"""
+        return f"room_{uuid.uuid4().hex[:16]}"
+
     def generate_meeting_password(self):
         """Generate a 6-digit meeting password"""
         return ''.join(secrets.choice(string.digits) for _ in range(6))
+
+    @property
+    def ice_servers_list(self):
+        """Get ICE servers as list"""
+        try:
+            return json.loads(self.ice_servers) if self.ice_servers else []
+        except json.JSONDecodeError:
+            return []
+
+    def set_ice_servers(self, servers_list):
+        """Set ICE servers from list"""
+        self.ice_servers = json.dumps(servers_list)
 
     @property
     def is_active(self):
@@ -126,7 +158,7 @@ class Meeting(models.Model):
 
 class MeetingParticipant(models.Model):
     """
-    Participants in a meeting
+    Participants in a meeting with WebRTC connection info
     """
     ROLE_CHOICES = [
         ('host', 'Host'),
@@ -139,6 +171,9 @@ class MeetingParticipant(models.Model):
         ('joined', 'Joined'),
         ('left', 'Left'),
         ('waiting', 'Waiting Room'),
+        ('connecting', 'Connecting'),
+        ('connected', 'Connected'),
+        ('disconnected', 'Disconnected'),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -148,19 +183,32 @@ class MeetingParticipant(models.Model):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='participant')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='invited')
 
+    # WebRTC Connection Info
+    peer_id = models.CharField(max_length=255, blank=True)  # Unique peer identifier
+    socket_id = models.CharField(max_length=255, blank=True)  # WebSocket connection ID
+    connection_id = models.CharField(max_length=255, blank=True)  # WebRTC connection ID
+
     # Join/Leave tracking
     joined_at = models.DateTimeField(null=True, blank=True)
     left_at = models.DateTimeField(null=True, blank=True)
+    last_seen = models.DateTimeField(auto_now=True)
 
     # Permissions
     can_mute_others = models.BooleanField(default=False)
     can_share_screen = models.BooleanField(default=True)
     can_record = models.BooleanField(default=False)
+    can_control_recording = models.BooleanField(default=False)
 
     # Audio/Video status
     is_audio_muted = models.BooleanField(default=False)
     is_video_disabled = models.BooleanField(default=False)
     is_screen_sharing = models.BooleanField(default=False)
+    is_hand_raised = models.BooleanField(default=False)
+
+    # Connection quality metrics
+    connection_quality = models.CharField(max_length=20, default='good')  # poor, fair, good, excellent
+    bandwidth_usage = models.JSONField(default=dict)  # Store bandwidth metrics
+    network_stats = models.JSONField(default=dict)  # Store network statistics
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -170,6 +218,8 @@ class MeetingParticipant(models.Model):
         indexes = [
             models.Index(fields=['meeting', 'status']),
             models.Index(fields=['user', 'status']),
+            models.Index(fields=['peer_id']),
+            models.Index(fields=['socket_id']),
         ]
 
     def __str__(self):
@@ -186,6 +236,90 @@ class MeetingParticipant(models.Model):
         self.status = 'left'
         self.left_at = timezone.now()
         self.save()
+
+    def connect_webrtc(self, peer_id, socket_id, connection_id=None):
+        """Update WebRTC connection info"""
+        self.peer_id = peer_id
+        self.socket_id = socket_id
+        if connection_id:
+            self.connection_id = connection_id
+        self.status = 'connected'
+        self.save()
+
+    def update_network_stats(self, stats):
+        """Update network statistics"""
+        self.network_stats = stats
+        self.last_seen = timezone.now()
+        self.save()
+
+
+class WebRTCSignal(models.Model):
+    """
+    WebRTC signaling messages
+    """
+    SIGNAL_TYPES = [
+        ('offer', 'Offer'),
+        ('answer', 'Answer'),
+        ('ice_candidate', 'ICE Candidate'),
+        ('join', 'Join Room'),
+        ('leave', 'Leave Room'),
+        ('mute', 'Mute Audio'),
+        ('unmute', 'Unmute Audio'),
+        ('video_on', 'Enable Video'),
+        ('video_off', 'Disable Video'),
+        ('screen_share_start', 'Start Screen Share'),
+        ('screen_share_stop', 'Stop Screen Share'),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE, related_name='webrtc_signals')
+    from_participant = models.ForeignKey(MeetingParticipant, on_delete=models.CASCADE, related_name='sent_signals')
+    to_participant = models.ForeignKey(MeetingParticipant, on_delete=models.CASCADE, related_name='received_signals', null=True, blank=True)
+
+    signal_type = models.CharField(max_length=20, choices=SIGNAL_TYPES)
+    signal_data = models.JSONField()  # Store the actual signaling data
+
+    processed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']
+        indexes = [
+            models.Index(fields=['meeting', 'processed']),
+            models.Index(fields=['from_participant']),
+            models.Index(fields=['to_participant']),
+        ]
+
+    def __str__(self):
+        return f"{self.signal_type} from {self.from_participant} in {self.meeting.meeting_id}"
+
+
+class MeetingRoom(models.Model):
+    """
+    WebRTC room management
+    """
+    meeting = models.OneToOneField(Meeting, on_delete=models.CASCADE, related_name='room')
+    room_id = models.CharField(max_length=255, unique=True)
+
+    # Media server configuration
+    media_server_type = models.CharField(max_length=50, default='mediasoup')  # mediasoup, kurento, janus
+    media_server_config = models.JSONField(default=dict)
+
+    # Room settings
+    max_video_streams = models.IntegerField(default=16)
+    max_audio_streams = models.IntegerField(default=50)
+    enable_simulcast = models.BooleanField(default=True)
+    enable_svc = models.BooleanField(default=False)
+
+    # Recording configuration
+    is_recording = models.BooleanField(default=False)
+    recording_config = models.JSONField(default=dict)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Room {self.room_id} for {self.meeting.title}"
 
 
 class MeetingInvitation(models.Model):
@@ -273,6 +407,10 @@ class MeetingRecording(models.Model):
     duration_seconds = models.IntegerField(null=True, blank=True)
     file_path = models.CharField(max_length=500, blank=True)  # Path to storage
 
+    # Recording server info
+    recording_server_id = models.CharField(max_length=255, blank=True)
+    recording_job_id = models.CharField(max_length=255, blank=True)
+
     # Timestamps
     recording_started_at = models.DateTimeField()
     recording_ended_at = models.DateTimeField(null=True, blank=True)
@@ -321,13 +459,14 @@ class MeetingChat(models.Model):
         ('text', 'Text Message'),
         ('system', 'System Message'),
         ('file', 'File Share'),
+        ('emoji_reaction', 'Emoji Reaction'),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE, related_name='chat_messages')
     participant = models.ForeignKey(MeetingParticipant, on_delete=models.CASCADE, related_name='chat_messages')
 
-    message_type = models.CharField(max_length=10, choices=MESSAGE_TYPE_CHOICES, default='text')
+    message_type = models.CharField(max_length=15, choices=MESSAGE_TYPE_CHOICES, default='text')
     content = models.TextField()
 
     # For file sharing
@@ -335,8 +474,9 @@ class MeetingChat(models.Model):
     file_size = models.BigIntegerField(null=True, blank=True)
     file_path = models.CharField(max_length=500, blank=True)
 
-    # Metadata
+    # Message metadata
     is_private = models.BooleanField(default=False)  # Private message to host
+    reply_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -372,6 +512,12 @@ class MeetingSettings(models.Model):
     default_video_quality = models.CharField(max_length=10, choices=MeetingRecording.QUALITY_CHOICES, default='1080p')
     join_with_video_off = models.BooleanField(default=False)
     join_with_audio_muted = models.BooleanField(default=False)
+
+    # WebRTC preferences
+    preferred_codec = models.CharField(max_length=20, default='VP8')  # VP8, VP9, H264
+    enable_echo_cancellation = models.BooleanField(default=True)
+    enable_noise_suppression = models.BooleanField(default=True)
+    enable_auto_gain_control = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
