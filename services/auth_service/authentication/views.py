@@ -1,5 +1,6 @@
 from rest_framework import status, generics, permissions
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import login, logout
@@ -25,7 +26,8 @@ from .serializers import (
     PasswordResetRequestSerializer,
     PasswordResetConfirmSerializer,
     EmailVerificationSerializer,
-    ProfilePictureUploadSerializer
+    ProfilePictureUploadSerializer,
+    UserSerializer
 )
 
 logger = logging.getLogger(__name__)
@@ -165,6 +167,9 @@ def google_auth(request):
                 if user_updated:
                     user.save()
 
+                # Ensure UserProfile exists (use get_or_create to avoid duplicates)
+                UserProfile.objects.get_or_create(user=user)
+
             except User.DoesNotExist:
                 # Create new user
                 with transaction.atomic():
@@ -178,8 +183,8 @@ def google_auth(request):
                         is_email_verified=True,
                         is_active=True
                     )
-                    # Create profile
-                    UserProfile.objects.create(user=user)
+                    # Create profile using get_or_create to avoid race conditions
+                    UserProfile.objects.get_or_create(user=user)
 
             # Update last login
             user.last_login_at = timezone.now()
@@ -208,7 +213,6 @@ def google_auth(request):
             }, status=status.HTTP_400_BAD_REQUEST)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def logout_view(request):
@@ -532,3 +536,34 @@ def health_check(request):
         'status': 'healthy',
         'service': 'auth_service'
     })
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def verify_token(request):
+    """
+    Verify Google OAuth token and return user data for inter-service communication
+    """
+    try:
+        user_data = {
+            'id': str(request.user.id),
+            'email': request.user.email,
+            'first_name': request.user.first_name,
+            'last_name': request.user.last_name,
+            'full_name': request.user.get_full_name(),
+            'is_active': request.user.is_active,
+            'is_staff': request.user.is_staff,
+            'is_superuser': request.user.is_superuser,
+        }
+        
+        # Add profile picture if available
+        if hasattr(request.user, 'profile') and request.user.profile.profile_picture:
+            user_data['profile_picture'] = request.user.profile.profile_picture.url
+            
+        return Response(user_data, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response(
+            {'error': 'Failed to verify token'}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )

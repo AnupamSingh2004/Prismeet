@@ -1,436 +1,344 @@
 from rest_framework import serializers
 from django.utils import timezone
-from django.contrib.auth import get_user_model
+from datetime import datetime, timedelta
+import random
+import string
+import secrets
+
 from .models import (
-    Meeting, MeetingParticipant, MeetingInvitation,
-    MeetingRecording, MeetingChat, MeetingSettings
+    Meeting,
+    MeetingParticipant,
+    MeetingInvitation,
+    WebRTCSession,
+    MeetingRecording,
+    MeetingAnalytics
 )
-import logging
-
-logger = logging.getLogger(__name__)
-User = get_user_model()
-
-
-class MeetingParticipantSerializer(serializers.ModelSerializer):
-    """
-    Serializer for meeting participants
-    """
-    user_name = serializers.CharField(source='user.full_name', read_only=True)
-    user_email = serializers.CharField(source='user.email', read_only=True)
-    user_profile_picture = serializers.CharField(source='user.profile_picture_base64', read_only=True)
-
-    class Meta:
-        model = MeetingParticipant
-        fields = [
-            'id', 'user', 'user_name', 'user_email', 'user_profile_picture',
-            'role', 'status', 'joined_at', 'left_at', 'can_mute_others',
-            'can_share_screen', 'can_record', 'is_audio_muted',
-            'is_video_disabled', 'is_screen_sharing', 'created_at'
-        ]
-        read_only_fields = ['id', 'joined_at', 'left_at', 'created_at']
-
-
-class MeetingListSerializer(serializers.ModelSerializer):
-    """
-    Serializer for meeting list view (lightweight)
-    """
-    host_name = serializers.CharField(source='host.full_name', read_only=True)
-    participant_count = serializers.SerializerMethodField()
-    is_live = serializers.SerializerMethodField()
-    can_join = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Meeting
-        fields = [
-            'id', 'meeting_id', 'title', 'description', 'host', 'host_name',
-            'meeting_type', 'status', 'scheduled_start_time', 'scheduled_end_time',
-            'duration_minutes', 'is_recording_enabled', 'is_password_protected',
-            'participant_count', 'is_live', 'can_join', 'created_at'
-        ]
-
-    def get_participant_count(self, obj):
-        return obj.participants.filter(status='joined').count()
-
-    def get_is_live(self, obj):
-        return obj.status == 'in_progress'
-
-    def get_can_join(self, obj):
-        request = self.context.get('request')
-        if request and request.user.is_authenticated:
-            return obj.can_join(request.user)
-        return False
-
-
-class MeetingDetailSerializer(serializers.ModelSerializer):
-    """
-    Serializer for detailed meeting view
-    """
-    host_name = serializers.CharField(source='host.full_name', read_only=True)
-    host_email = serializers.CharField(source='host.email', read_only=True)
-    participants = MeetingParticipantSerializer(many=True, read_only=True)
-    participant_count = serializers.SerializerMethodField()
-    active_participant_count = serializers.SerializerMethodField()
-    is_live = serializers.SerializerMethodField()
-    can_join = serializers.SerializerMethodField()
-    join_url = serializers.SerializerMethodField()
-    recording_count = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Meeting
-        fields = [
-            'id', 'meeting_id', 'title', 'description', 'host', 'host_name', 'host_email',
-            'meeting_type', 'status', 'scheduled_start_time', 'scheduled_end_time',
-            'actual_start_time', 'actual_end_time', 'duration_minutes', 'timezone',
-            'is_recording_enabled', 'is_waiting_room_enabled', 'is_password_protected',
-            'meeting_password', 'max_participants', 'allow_participants_to_mute',
-            'allow_participants_to_share_screen', 'allow_participants_to_record',
-            'participants', 'participant_count', 'active_participant_count',
-            'is_live', 'can_join', 'join_url', 'recording_count', 'created_at', 'updated_at'
-        ]
-        read_only_fields = [
-            'id', 'meeting_id', 'host', 'actual_start_time', 'actual_end_time',
-            'created_at', 'updated_at'
-        ]
-
-    def get_participant_count(self, obj):
-        return obj.participants.count()
-
-    def get_active_participant_count(self, obj):
-        return obj.participants.filter(status='joined').count()
-
-    def get_is_live(self, obj):
-        return obj.status == 'in_progress'
-
-    def get_can_join(self, obj):
-        request = self.context.get('request')
-        if request and request.user.is_authenticated:
-            return obj.can_join(request.user)
-        return False
-
-    def get_join_url(self, obj):
-        request = self.context.get('request')
-        if request:
-            base_url = request.build_absolute_uri('/').rstrip('/')
-            return f"{base_url}/meeting/{obj.meeting_id}"
-        return None
-
-    def get_recording_count(self, obj):
-        return obj.recordings.filter(status='ready').count()
 
 
 class MeetingCreateSerializer(serializers.ModelSerializer):
     """
     Serializer for creating meetings
     """
-    participant_emails = serializers.ListField(
+    invitees = serializers.ListField(
         child=serializers.EmailField(),
         required=False,
-        allow_empty=True
+        allow_empty=True,
+        write_only=True
     )
 
     class Meta:
         model = Meeting
         fields = [
-            'title', 'description', 'meeting_type', 'scheduled_start_time',
-            'scheduled_end_time', 'duration_minutes', 'timezone', 'is_recording_enabled',
-            'is_waiting_room_enabled', 'is_password_protected', 'max_participants',
-            'allow_participants_to_mute', 'allow_participants_to_share_screen',
-            'allow_participants_to_record', 'participant_emails'
+            'title', 'description', 'meeting_type', 'scheduled_start',
+            'scheduled_end', 'duration_minutes', 'timezone', 'passcode',
+            'waiting_room_enabled', 'join_before_host', 'mute_participants_on_join',
+            'allow_screen_sharing', 'allow_recording', 'max_participants',
+            'invitees'
         ]
 
-    def validate(self, attrs):
-        # Validate scheduled times
-        if attrs.get('scheduled_start_time') and attrs.get('scheduled_end_time'):
-            if attrs['scheduled_end_time'] <= attrs['scheduled_start_time']:
-                raise serializers.ValidationError("End time must be after start time.")
+    def validate(self, data):
+        # Validate scheduled meetings
+        if data.get('meeting_type') == 'scheduled':
+            if not data.get('scheduled_start'):
+                raise serializers.ValidationError("Scheduled meetings must have a start time")
 
-        # Validate start time is not in the past for scheduled meetings
-        if attrs.get('meeting_type') == 'scheduled' and attrs.get('scheduled_start_time'):
-            if attrs['scheduled_start_time'] <= timezone.now():
-                raise serializers.ValidationError("Scheduled time must be in the future.")
+            # Check if scheduled time is in the future
+            if data['scheduled_start'] <= timezone.now():
+                raise serializers.ValidationError("Scheduled time must be in the future")
 
-        return attrs
+        # Set end time if not provided
+        if data.get('scheduled_start') and not data.get('scheduled_end'):
+            duration = timedelta(minutes=data.get('duration_minutes', 60))
+            data['scheduled_end'] = data['scheduled_start'] + duration
+
+        return data
 
     def create(self, validated_data):
-        participant_emails = validated_data.pop('participant_emails', [])
+        # Remove invitees from validated_data as it's not a model field
+        invitees = validated_data.pop('invitees', [])
+
+        # Generate unique meeting ID
+        meeting_id = self.generate_meeting_id()
+        validated_data['meeting_id'] = meeting_id
+
+        # Generate passcode if not provided
+        if not validated_data.get('passcode'):
+            validated_data['passcode'] = self.generate_passcode()
+
+        # Set host information from context
         request = self.context.get('request')
+        if request and request.user:
+            validated_data['host_id'] = request.user.id
+            validated_data['host_email'] = request.user.email
+            validated_data['host_name'] = request.user.get_full_name() or request.user.email
 
-        # Set host as current user
-        validated_data['host'] = request.user
+        # Set status based on meeting type
+        if validated_data.get('meeting_type') == 'instant':
+            validated_data['status'] = 'ongoing'
+            validated_data['actual_start'] = timezone.now()
 
-        # Create meeting
-        meeting = Meeting.objects.create(**validated_data)
+        meeting = super().create(validated_data)
 
         # Add host as participant
         MeetingParticipant.objects.create(
             meeting=meeting,
-            user=request.user,
+            user_id=meeting.host_id,
+            email=meeting.host_email,
+            name=meeting.host_name,
             role='host',
-            can_mute_others=True,
-            can_share_screen=True,
-            can_record=True
+            status='joined' if meeting.status == 'ongoing' else 'invited'
         )
 
-        # Send invitations
-        if participant_emails:
-            self._send_invitations(meeting, participant_emails, request.user)
+        # Create invitations
+        for email in invitees:
+            invitation_token = secrets.token_urlsafe(32)
+            MeetingInvitation.objects.create(
+                meeting=meeting,
+                invitee_email=email,
+                invitation_token=invitation_token,
+                expires_at=timezone.now() + timedelta(days=7)
+            )
 
         return meeting
 
-    def _send_invitations(self, meeting, emails, invited_by):
-        """Send meeting invitations"""
-        for email in emails:
-            try:
-                invitation = MeetingInvitation.objects.create(
-                    meeting=meeting,
-                    email=email,
-                    invited_by=invited_by
-                )
-                # TODO: Send email invitation
-                logger.info(f"Invitation sent to {email} for meeting {meeting.meeting_id}")
-            except Exception as e:
-                logger.error(f"Failed to send invitation to {email}: {str(e)}")
+    def generate_meeting_id(self):
+        """Generate unique 9-digit meeting ID"""
+        while True:
+            meeting_id = ''.join(random.choices(string.digits, k=9))
+            if not Meeting.objects.filter(meeting_id=meeting_id).exists():
+                return meeting_id
+
+    def generate_passcode(self):
+        """Generate 6-digit passcode"""
+        return ''.join(random.choices(string.digits, k=6))
 
 
-class MeetingUpdateSerializer(serializers.ModelSerializer):
+class MeetingSerializer(serializers.ModelSerializer):
     """
-    Serializer for updating meetings
+    Full meeting serializer for responses
     """
+    join_url = serializers.SerializerMethodField()
+    participant_count = serializers.SerializerMethodField()
+    can_join = serializers.SerializerMethodField()
+    is_host = serializers.SerializerMethodField()
+
     class Meta:
         model = Meeting
         fields = [
-            'title', 'description', 'scheduled_start_time', 'scheduled_end_time',
-            'duration_minutes', 'timezone', 'is_recording_enabled',
-            'is_waiting_room_enabled', 'is_password_protected', 'max_participants',
-            'allow_participants_to_mute', 'allow_participants_to_share_screen',
-            'allow_participants_to_record'
-        ]
-
-    def validate(self, attrs):
-        # Only allow updates if meeting hasn't started
-        if self.instance.status == 'in_progress':
-            raise serializers.ValidationError("Cannot update meeting that is in progress.")
-
-        # Validate scheduled times
-        start_time = attrs.get('scheduled_start_time', self.instance.scheduled_start_time)
-        end_time = attrs.get('scheduled_end_time', self.instance.scheduled_end_time)
-
-        if start_time and end_time and end_time <= start_time:
-            raise serializers.ValidationError("End time must be after start time.")
-
-        return attrs
-
-
-class MeetingInvitationSerializer(serializers.ModelSerializer):
-    """
-    Serializer for meeting invitations
-    """
-    meeting_title = serializers.CharField(source='meeting.title', read_only=True)
-    meeting_id = serializers.CharField(source='meeting.meeting_id', read_only=True)
-    meeting_start_time = serializers.DateTimeField(source='meeting.scheduled_start_time', read_only=True)
-    invited_by_name = serializers.CharField(source='invited_by.full_name', read_only=True)
-
-    class Meta:
-        model = MeetingInvitation
-        fields = [
-            'id', 'meeting', 'meeting_title', 'meeting_id', 'meeting_start_time',
-            'email', 'invited_by', 'invited_by_name', 'status', 'message',
-            'sent_at', 'responded_at'
-        ]
-        read_only_fields = ['id', 'sent_at', 'responded_at']
-
-
-class MeetingJoinSerializer(serializers.Serializer):
-    """
-    Serializer for joining meetings
-    """
-    meeting_id = serializers.CharField(max_length=12)
-    password = serializers.CharField(max_length=10, required=False, allow_blank=True)
-
-    def validate_meeting_id(self, value):
-        try:
-            meeting = Meeting.objects.get(meeting_id=value)
-            if meeting.status == 'cancelled':
-                raise serializers.ValidationError("This meeting has been cancelled.")
-            return value
-        except Meeting.DoesNotExist:
-            raise serializers.ValidationError("Meeting not found.")
-
-    def validate(self, attrs):
-        meeting_id = attrs.get('meeting_id')
-        password = attrs.get('password', '')
-
-        try:
-            meeting = Meeting.objects.get(meeting_id=meeting_id)
-
-            # Check password if required
-            if meeting.is_password_protected and meeting.meeting_password != password:
-                raise serializers.ValidationError("Invalid meeting password.")
-
-            attrs['meeting'] = meeting
-            return attrs
-        except Meeting.DoesNotExist:
-            raise serializers.ValidationError("Meeting not found.")
-
-
-class MeetingRecordingSerializer(serializers.ModelSerializer):
-    """
-    Serializer for meeting recordings
-    """
-    meeting_title = serializers.CharField(source='meeting.title', read_only=True)
-    meeting_id = serializers.CharField(source='meeting.meeting_id', read_only=True)
-    file_size_mb = serializers.ReadOnlyField()
-    duration_formatted = serializers.ReadOnlyField()
-    download_url = serializers.SerializerMethodField()
-
-    class Meta:
-        model = MeetingRecording
-        fields = [
-            'id', 'meeting', 'meeting_title', 'meeting_id', 'title',
-            'quality', 'status', 'file_size_bytes', 'file_size_mb',
-            'duration_seconds', 'duration_formatted', 'recording_started_at',
-            'recording_ended_at', 'processing_completed_at', 'download_url',
-            'created_at', 'updated_at'
+            'id', 'title', 'description', 'host_id', 'host_email', 'host_name',
+            'meeting_id', 'passcode', 'meeting_type', 'scheduled_start',
+            'scheduled_end', 'duration_minutes', 'timezone', 'status',
+            'actual_start', 'actual_end', 'waiting_room_enabled',
+            'join_before_host', 'mute_participants_on_join', 'allow_screen_sharing',
+            'allow_recording', 'max_participants', 'participant_count',
+            'join_url', 'can_join', 'is_host', 'created_at', 'updated_at'
         ]
         read_only_fields = [
-            'id', 'file_size_bytes', 'duration_seconds', 'recording_started_at',
-            'recording_ended_at', 'processing_completed_at', 'created_at', 'updated_at'
+            'id', 'host_id', 'host_email', 'host_name', 'meeting_id',
+            'actual_start', 'actual_end', 'created_at', 'updated_at'
         ]
 
-    def get_download_url(self, obj):
-        if obj.status == 'ready' and obj.file_path:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(f'/api/meetings/recordings/{obj.id}/download/')
-        return None
-
-
-class MeetingChatSerializer(serializers.ModelSerializer):
-    """
-    Serializer for meeting chat messages
-    """
-    participant_name = serializers.CharField(source='participant.user.full_name', read_only=True)
-    participant_role = serializers.CharField(source='participant.role', read_only=True)
-
-    class Meta:
-        model = MeetingChat
-        fields = [
-            'id', 'participant', 'participant_name', 'participant_role',
-            'message_type', 'content', 'file_name', 'file_size',
-            'is_private', 'created_at'
-        ]
-        read_only_fields = ['id', 'created_at']
-
-
-class MeetingSettingsSerializer(serializers.ModelSerializer):
-    """
-    Serializer for user meeting settings
-    """
-    class Meta:
-        model = MeetingSettings
-        fields = [
-            'default_meeting_duration', 'default_max_participants', 'auto_record',
-            'auto_mute_participants', 'enable_waiting_room', 'email_meeting_reminders',
-            'email_recording_ready', 'email_meeting_invitations', 'default_video_quality',
-            'join_with_video_off', 'join_with_audio_muted'
-        ]
-
-
-class InstantMeetingSerializer(serializers.Serializer):
-    """
-    Serializer for creating instant meetings
-    """
-    title = serializers.CharField(max_length=200, required=False)
-    description = serializers.CharField(required=False, allow_blank=True)
-    is_recording_enabled = serializers.BooleanField(default=True)
-    is_password_protected = serializers.BooleanField(default=False)
-    max_participants = serializers.IntegerField(default=100, min_value=2, max_value=1000)
-
-    def validate_title(self, value):
-        if not value:
-            return f"Instant Meeting - {timezone.now().strftime('%Y-%m-%d %H:%M')}"
-        return value
-
-    def create(self, validated_data):
+    def get_join_url(self, obj):
         request = self.context.get('request')
+        if request:
+            return request.build_absolute_uri(f'/api/meetings/{obj.meeting_id}/join/')
+        return f'/api/meetings/{obj.meeting_id}/join/'
 
-        # Create instant meeting
-        meeting = Meeting.objects.create(
-            title=validated_data.get('title', f"Instant Meeting - {timezone.now().strftime('%Y-%m-%d %H:%M')}"),
-            description=validated_data.get('description', ''),
-            host=request.user,
-            meeting_type='instant',
-            status='in_progress',
-            actual_start_time=timezone.now(),
-            is_recording_enabled=validated_data.get('is_recording_enabled', True),
-            is_password_protected=validated_data.get('is_password_protected', False),
-            max_participants=validated_data.get('max_participants', 100),
-            duration_minutes=120  # Default 2 hours for instant meetings
-        )
+    def get_participant_count(self, obj):
+        return obj.participants.filter(status='joined').count()
 
-        # Add host as participant
-        MeetingParticipant.objects.create(
-            meeting=meeting,
-            user=request.user,
-            role='host',
-            status='joined',
-            joined_at=timezone.now(),
-            can_mute_others=True,
-            can_share_screen=True,
-            can_record=True
-        )
+    def get_can_join(self, obj):
+        return obj.can_join()
 
-        return meeting
+    def get_is_host(self, obj):
+        request = self.context.get('request')
+        if request and request.user:
+            return str(obj.host_id) == str(request.user.id)
+        return False
 
 
-class MeetingStatsSerializer(serializers.Serializer):
+class MeetingParticipantSerializer(serializers.ModelSerializer):
     """
-    Serializer for meeting statistics
-    """
-    total_meetings = serializers.IntegerField()
-    meetings_this_month = serializers.IntegerField()
-    total_participants = serializers.IntegerField()
-    total_recording_time = serializers.IntegerField()  # in minutes
-    average_meeting_duration = serializers.IntegerField()  # in minutes
-    meetings_by_status = serializers.DictField()
-    meetings_by_type = serializers.DictField()
-    recent_meetings = MeetingListSerializer(many=True)
-
-
-class ParticipantUpdateSerializer(serializers.ModelSerializer):
-    """
-    Serializer for updating participant status during meeting
+    Meeting participant serializer
     """
     class Meta:
         model = MeetingParticipant
         fields = [
-            'is_audio_muted', 'is_video_disabled', 'is_screen_sharing'
+            'id', 'user_id', 'email', 'name', 'is_guest', 'role', 'status',
+            'audio_enabled', 'video_enabled', 'screen_sharing', 'peer_id',
+            'joined_at', 'left_at', 'duration_seconds', 'created_at'
         ]
+        read_only_fields = [
+            'id', 'duration_seconds', 'joined_at', 'left_at', 'created_at'
+        ]
+
+
+class JoinMeetingSerializer(serializers.Serializer):
+    """
+    Serializer for joining meetings
+    """
+    passcode = serializers.CharField(max_length=10, required=False)
+    name = serializers.CharField(max_length=100, required=False)
+    audio_enabled = serializers.BooleanField(default=True)
+    video_enabled = serializers.BooleanField(default=True)
+
+    def validate(self, data):
+        meeting_id = self.context.get('meeting_id')
+        request = self.context.get('request')
+
+        if not meeting_id:
+            raise serializers.ValidationError("Meeting ID is required")
+
+        try:
+            meeting = Meeting.objects.get(meeting_id=meeting_id)
+        except Meeting.DoesNotExist:
+            raise serializers.ValidationError("Meeting not found")
+
+        # Check if meeting can be joined
+        if not meeting.can_join():
+            raise serializers.ValidationError("Meeting cannot be joined at this time")
+
+        # Check passcode if meeting has one
+        if meeting.passcode and data.get('passcode') != meeting.passcode:
+            raise serializers.ValidationError("Invalid passcode")
+
+        # Check if user is authenticated or provide name for guest
+        if not request.user.is_authenticated and not data.get('name'):
+            raise serializers.ValidationError("Name is required for guest users")
+
+        # Check participant limit
+        current_participants = meeting.participants.filter(status='joined').count()
+        if current_participants >= meeting.max_participants:
+            raise serializers.ValidationError("Meeting has reached maximum participants")
+
+        self.meeting = meeting
+        return data
+
+
+class WebRTCOfferSerializer(serializers.Serializer):
+    """
+    Serializer for WebRTC offer/answer exchange
+    """
+    type = serializers.ChoiceField(choices=['offer', 'answer', 'ice-candidate'])
+    sdp = serializers.CharField(required=False, allow_blank=True)
+    candidate = serializers.CharField(required=False, allow_blank=True)
+    sdpMLineIndex = serializers.IntegerField(required=False)
+    sdpMid = serializers.CharField(required=False, allow_blank=True)
+    target_peer_id = serializers.CharField(max_length=100)
 
 
 class MeetingControlSerializer(serializers.Serializer):
     """
-    Serializer for meeting control actions
+    Serializer for meeting controls (mute, video, etc.)
     """
-    ACTION_CHOICES = [
-        ('start', 'Start Meeting'),
-        ('end', 'End Meeting'),
-        ('pause_recording', 'Pause Recording'),
-        ('resume_recording', 'Resume Recording'),
-        ('mute_all', 'Mute All Participants'),
-        ('unmute_all', 'Unmute All Participants'),
-    ]
+    action = serializers.ChoiceField(choices=[
+        'mute_audio', 'unmute_audio', 'enable_video', 'disable_video',
+        'start_screen_share', 'stop_screen_share', 'start_recording',
+        'stop_recording', 'end_meeting', 'remove_participant'
+    ])
+    target_participant_id = serializers.UUIDField(required=False)
 
-    action = serializers.ChoiceField(choices=ACTION_CHOICES)
-    participant_id = serializers.UUIDField(required=False)  # For participant-specific actions
 
-    def validate(self, attrs):
-        action = attrs.get('action')
-        participant_id = attrs.get('participant_id')
+class MeetingInvitationSerializer(serializers.ModelSerializer):
+    """
+    Meeting invitation serializer
+    """
+    meeting_title = serializers.CharField(source='meeting.title', read_only=True)
+    meeting_id = serializers.CharField(source='meeting.meeting_id', read_only=True)
+    host_name = serializers.CharField(source='meeting.host_name', read_only=True)
 
-        # Some actions require participant_id
-        participant_required_actions = ['mute_participant', 'unmute_participant', 'remove_participant']
-        if action in participant_required_actions and not participant_id:
-            raise serializers.ValidationError(f"participant_id is required for {action} action.")
+    class Meta:
+        model = MeetingInvitation
+        fields = [
+            'id', 'meeting_title', 'meeting_id', 'host_name', 'invitee_email',
+            'invitee_name', 'status', 'message', 'sent_at', 'responded_at',
+            'expires_at', 'invitation_token'
+        ]
+        read_only_fields = [
+            'id', 'invitation_token', 'sent_at', 'responded_at'
+        ]
 
-        return attrs
+
+class CreateInvitationSerializer(serializers.Serializer):
+    """
+    Serializer for creating meeting invitations
+    """
+    emails = serializers.ListField(
+        child=serializers.EmailField(),
+        min_length=1,
+        max_length=50
+    )
+    message = serializers.CharField(max_length=500, required=False, allow_blank=True)
+
+
+class MeetingRecordingSerializer(serializers.ModelSerializer):
+    """
+    Meeting recording serializer
+    """
+    meeting_title = serializers.CharField(source='meeting.title', read_only=True)
+
+    class Meta:
+        model = MeetingRecording
+        fields = [
+            'id', 'recording_id', 'meeting_title', 'status', 'file_size',
+            'duration_seconds', 'format', 'started_by_name', 'started_at',
+            'ended_at', 'download_url', 'expires_at'
+        ]
+        read_only_fields = [
+            'id', 'recording_id', 'file_size', 'duration_seconds',
+            'started_at', 'ended_at', 'download_url'
+        ]
+
+
+class MeetingAnalyticsSerializer(serializers.ModelSerializer):
+    """
+    Meeting analytics serializer
+    """
+    meeting_title = serializers.CharField(source='meeting.title', read_only=True)
+
+    class Meta:
+        model = MeetingAnalytics
+        fields = [
+            'meeting_title', 'total_participants', 'max_concurrent_participants',
+            'average_duration_seconds', 'total_audio_time_seconds',
+            'total_video_time_seconds', 'screen_sharing_duration_seconds',
+            'average_connection_quality', 'connection_issues_count',
+            'chat_messages_count', 'reactions_count', 'total_bandwidth_mb',
+            'peak_bandwidth_mbps', 'created_at', 'updated_at'
+        ]
+        read_only_fields = '__all__'
+
+
+class ICEServerConfigSerializer(serializers.Serializer):
+    """
+    ICE server configuration for WebRTC
+    """
+    urls = serializers.ListField(
+        child=serializers.URLField(),
+        help_text="List of STUN/TURN server URLs"
+    )
+    username = serializers.CharField(required=False, allow_blank=True)
+    credential = serializers.CharField(required=False, allow_blank=True)
+
+
+class WebRTCConfigSerializer(serializers.Serializer):
+    """
+    WebRTC configuration response
+    """
+    ice_servers = ICEServerConfigSerializer(many=True)
+    peer_id = serializers.CharField()
+    room_id = serializers.CharField()
+    is_host = serializers.BooleanField()
+    media_constraints = serializers.DictField()
+
+
+class MeetingStatsSerializer(serializers.Serializer):
+    """
+    Real-time meeting statistics
+    """
+    meeting_id = serializers.CharField()
+    participants_count = serializers.IntegerField()
+    duration_seconds = serializers.IntegerField()
+    is_recording = serializers.BooleanField()
+    bandwidth_usage = serializers.FloatField()
+    connection_quality = serializers.FloatField()

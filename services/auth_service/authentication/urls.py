@@ -29,4 +29,7 @@ urlpatterns = [
     # Email verification
     path('verify-email/', views.verify_email, name='verify_email'),
     path('resend-verification/', views.resend_verification_email, name='resend_verification'),
+
+    # Token verification for inter-service communication
+    path('verify-token/', views.verify_token, name='verify_token'),
 ]

@@ -1588,3 +1588,544 @@ INFO 2025-06-08 05:20:00,781 views 11 140714587453120 Profile picture uploaded s
 INFO 2025-06-08 05:20:00,784 basehttp 11 140714587453120 "POST /api/auth/profile/picture/upload/ HTTP/1.0" 200 158755
 INFO 2025-06-08 05:20:00,805 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 159194
 INFO 2025-06-08 05:20:00,828 basehttp 11 140714587453120 "GET /api/auth/profile/ HTTP/1.0" 200 159194
+INFO 2025-06-12 05:33:16,501 autoreload 11 139906760506240 Watching for file changes with StatReloader
+INFO 2025-06-12 06:26:09,446 autoreload 11 140331813698432 Watching for file changes with StatReloader
+INFO 2025-06-12 06:29:35,805 autoreload 11 139810124475264 Watching for file changes with StatReloader
+INFO 2025-06-12 06:35:15,456 autoreload 11 139711021304704 Watching for file changes with StatReloader
+INFO 2025-06-12 06:39:31,720 autoreload 11 140573399538560 Watching for file changes with StatReloader
+INFO 2025-06-12 06:50:26,048 autoreload 11 140421304822656 Watching for file changes with StatReloader
+INFO 2025-06-12 06:56:52,821 autoreload 11 140042671733632 Watching for file changes with StatReloader
+INFO 2025-06-12 07:00:10,005 autoreload 11 140433592331136 Watching for file changes with StatReloader
+INFO 2025-06-12 07:30:27,725 autoreload 11 139694624410496 Watching for file changes with StatReloader
+INFO 2025-06-12 07:31:13,438 basehttp 11 139694539011776 "OPTIONS /api/auth/profile/ HTTP/1.0" 200 0
+WARNING 2025-06-12 07:31:13,460 log 11 139694539011776 Forbidden: /api/auth/profile/
+WARNING 2025-06-12 07:31:13,460 basehttp 11 139694539011776 "GET /api/auth/profile/ HTTP/1.0" 403 27
+INFO 2025-06-12 07:31:13,464 basehttp 11 139694539011776 "OPTIONS /api/auth/logout/ HTTP/1.0" 200 0
+WARNING 2025-06-12 07:31:13,474 log 11 139694539011776 Forbidden: /api/auth/logout/
+WARNING 2025-06-12 07:31:13,474 basehttp 11 139694539011776 "POST /api/auth/logout/ HTTP/1.0" 403 27
+INFO 2025-06-12 07:31:28,266 basehttp 11 139694539011776 "OPTIONS /api/auth/google-auth/ HTTP/1.0" 200 0
+ERROR 2025-06-12 07:31:28,389 log 11 139694539011776 Internal Server Error: /api/auth/google-auth/
+Traceback (most recent call last):
+  File "/app/authentication/views.py", line 146, in google_auth
+    user = User.objects.get(email=email)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 633, in get
+    raise self.model.DoesNotExist(
+authentication.models.User.DoesNotExist: User matching query does not exist.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UniqueViolation: duplicate key value violates unique constraint "authentication_userprofile_user_id_key"
+DETAIL:  Key (user_id)=(7c7fc10a-09c3-4e52-8cb5-f40bcc973bbd) already exists.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/authentication/views.py", line 182, in google_auth
+    UserProfile.objects.create(user=user)
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 663, in create
+    obj.save(force_insert=True, using=self.db)
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/base.py", line 902, in save
+    self.save_base(
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/base.py", line 1008, in save_base
+    updated = self._save_table(
+              ^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/base.py", line 1169, in _save_table
+    results = self._do_insert(
+              ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/base.py", line 1210, in _do_insert
+    return manager._insert(
+           ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 1864, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/sql/compiler.py", line 1882, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.11/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.IntegrityError: duplicate key value violates unique constraint "authentication_userprofile_user_id_key"
+DETAIL:  Key (user_id)=(7c7fc10a-09c3-4e52-8cb5-f40bcc973bbd) already exists.
+
+ERROR 2025-06-12 07:31:28,394 basehttp 11 139694539011776 "POST /api/auth/google-auth/ HTTP/1.0" 500 204677
+INFO 2025-06-12 07:32:52,328 autoreload 11 139866968214400 Watching for file changes with StatReloader
+ERROR 2025-06-12 07:33:11,507 log 11 139866813757120 Internal Server Error: /api/auth/google-auth/
+Traceback (most recent call last):
+  File "/app/authentication/views.py", line 146, in google_auth
+    user = User.objects.get(email=email)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 633, in get
+    raise self.model.DoesNotExist(
+authentication.models.User.DoesNotExist: User matching query does not exist.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UniqueViolation: duplicate key value violates unique constraint "authentication_userprofile_user_id_key"
+DETAIL:  Key (user_id)=(8d677573-7504-4fe6-b246-86536fce2e15) already exists.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/authentication/views.py", line 182, in google_auth
+    UserProfile.objects.create(user=user)
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 663, in create
+    obj.save(force_insert=True, using=self.db)
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/base.py", line 902, in save
+    self.save_base(
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/base.py", line 1008, in save_base
+    updated = self._save_table(
+              ^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/base.py", line 1169, in _save_table
+    results = self._do_insert(
+              ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/base.py", line 1210, in _do_insert
+    return manager._insert(
+           ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 1864, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/sql/compiler.py", line 1882, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.11/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.IntegrityError: duplicate key value violates unique constraint "authentication_userprofile_user_id_key"
+DETAIL:  Key (user_id)=(8d677573-7504-4fe6-b246-86536fce2e15) already exists.
+
+ERROR 2025-06-12 07:33:11,512 basehttp 11 139866813757120 "POST /api/auth/google-auth/ HTTP/1.0" 500 204677
+INFO 2025-06-12 07:34:20,162 autoreload 11 140349101800320 Watching for file changes with StatReloader
+ERROR 2025-06-12 07:34:33,896 log 11 140349017159360 Internal Server Error: /api/auth/google-auth/
+Traceback (most recent call last):
+  File "/app/authentication/views.py", line 146, in google_auth
+    user = User.objects.get(email=email)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 633, in get
+    raise self.model.DoesNotExist(
+authentication.models.User.DoesNotExist: User matching query does not exist.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+psycopg2.errors.UniqueViolation: duplicate key value violates unique constraint "authentication_userprofile_user_id_key"
+DETAIL:  Key (user_id)=(bccfcb38-2ab4-45fb-91f0-1d739ba2ece0) already exists.
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/decorators/csrf.py", line 65, in _view_wrapper
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 509, in dispatch
+    response = self.handle_exception(exc)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 469, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 480, in raise_uncaught_exception
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/views.py", line 506, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/rest_framework/decorators.py", line 50, in handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/app/authentication/views.py", line 182, in google_auth
+    UserProfile.objects.create(user=user)
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 663, in create
+    obj.save(force_insert=True, using=self.db)
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/base.py", line 902, in save
+    self.save_base(
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/base.py", line 1008, in save_base
+    updated = self._save_table(
+              ^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/base.py", line 1169, in _save_table
+    results = self._do_insert(
+              ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/base.py", line 1210, in _do_insert
+    return manager._insert(
+           ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/query.py", line 1864, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/models/sql/compiler.py", line 1882, in execute_sql
+    cursor.execute(sql, params)
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+  File "/usr/local/lib/python3.11/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/usr/local/lib/python3.11/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+django.db.utils.IntegrityError: duplicate key value violates unique constraint "authentication_userprofile_user_id_key"
+DETAIL:  Key (user_id)=(bccfcb38-2ab4-45fb-91f0-1d739ba2ece0) already exists.
+
+ERROR 2025-06-12 07:34:33,902 basehttp 11 140349017159360 "POST /api/auth/google-auth/ HTTP/1.0" 500 204680
+INFO 2025-06-12 07:38:03,511 autoreload 11 140349101800320 /app/authentication/views.py changed, reloading.
+INFO 2025-06-12 07:38:04,222 autoreload 14 139766884342656 Watching for file changes with StatReloader
+INFO 2025-06-12 07:40:25,653 autoreload 11 140162292259712 Watching for file changes with StatReloader
+INFO 2025-06-12 07:40:44,234 basehttp 11 140162207053504 "POST /api/auth/google-auth/ HTTP/1.0" 200 620
+INFO 2025-06-12 07:41:10,389 basehttp 11 140162207053504 "OPTIONS /api/auth/profile/picture/upload/ HTTP/1.0" 200 0
+INFO 2025-06-12 07:41:10,441 views 11 140162207053504 Profile picture uploaded successfully for user sanupam2004@gmail.com
+INFO 2025-06-12 07:41:10,444 basehttp 11 140162207053504 "POST /api/auth/profile/picture/upload/ HTTP/1.0" 200 158755
+INFO 2025-06-12 07:41:10,466 basehttp 11 140162207053504 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-12 07:41:10,491 basehttp 11 140162207053504 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-12 07:41:17,867 basehttp 11 140162207053504 "POST /api/auth/logout/ HTTP/1.0" 200 31
+INFO 2025-06-12 07:41:23,280 basehttp 11 140162207053504 "POST /api/auth/google-auth/ HTTP/1.0" 200 159301
+INFO 2025-06-12 07:41:31,624 basehttp 11 140162207053504 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-12 07:48:18,255 autoreload 11 139936167582592 Watching for file changes with StatReloader
+INFO 2025-06-12 07:48:23,692 basehttp 11 139936007190208 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-12 07:48:33,289 basehttp 11 139936007190208 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-12 07:59:04,640 basehttp 11 139936007190208 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-12 08:00:45,604 basehttp 11 139936007190208 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-12 08:01:48,623 basehttp 11 139936007190208 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-12 08:01:52,207 basehttp 11 139936007190208 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-12 08:01:54,824 basehttp 11 139936007190208 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-12 08:01:57,674 basehttp 11 139936007190208 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-12 08:02:00,338 basehttp 11 139936007190208 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-12 08:05:08,017 basehttp 11 139936007190208 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-12 08:05:46,881 autoreload 11 140280534399872 Watching for file changes with StatReloader
+INFO 2025-06-12 08:06:14,366 basehttp 11 140280449726144 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-12 08:08:35,283 basehttp 11 140280449726144 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-12 08:20:26,047 basehttp 11 140280449726144 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-12 08:21:00,590 basehttp 11 140280449726144 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-12 08:21:12,732 basehttp 11 140280449726144 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-13 13:03:35,818 autoreload 11 140249655163776 Watching for file changes with StatReloader
+INFO 2025-06-13 13:03:46,095 basehttp 11 140249570211520 "OPTIONS /api/auth/profile/ HTTP/1.0" 200 0
+INFO 2025-06-13 13:03:46,126 basehttp 11 140249570211520 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-13 13:05:03,863 basehttp 11 140249570211520 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-13 13:05:19,317 basehttp 11 140249570211520 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-13 13:05:24,847 basehttp 11 140249570211520 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-13 13:14:43,236 basehttp 11 140249570211520 "OPTIONS /api/meetings/ HTTP/1.1" 200 0
+WARNING 2025-06-13 13:14:43,253 log 11 140249570211520 Not Found: /api/meetings/
+WARNING 2025-06-13 13:14:43,254 basehttp 11 140249570211520 "POST /api/meetings/ HTTP/1.1" 404 2706
+INFO 2025-06-13 13:15:43,997 autoreload 11 140049520434048 Watching for file changes with StatReloader
+INFO 2025-06-13 13:16:00,860 basehttp 11 140049435850432 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-13 13:22:29,118 autoreload 11 140322390997888 Watching for file changes with StatReloader
+INFO 2025-06-13 13:22:43,641 basehttp 11 140322305734336 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+INFO 2025-06-13 13:49:52,295 autoreload 12 140631972928384 Watching for file changes with StatReloader
+INFO 2025-06-13 13:51:50,990 autoreload 11 140364434766720 Watching for file changes with StatReloader
+INFO 2025-06-13 13:51:58,721 basehttp 11 140364349437632 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+ERROR 2025-06-13 13:52:06,131 exception 11 140364349437632 Invalid HTTP_HOST header: 'auth_service:8001'. The domain name provided is not valid according to RFC 1034/1035.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/http/request.py", line 186, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'auth_service:8001'. The domain name provided is not valid according to RFC 1034/1035.
+WARNING 2025-06-13 13:52:06,157 log 11 140364349437632 Bad Request: /api/auth/profile/
+WARNING 2025-06-13 13:52:06,158 basehttp 11 140364349437632 "GET /api/auth/profile/ HTTP/1.1" 400 65333
+INFO 2025-06-13 14:15:41,926 autoreload 11 140635702266752 Watching for file changes with StatReloader
+INFO 2025-06-13 14:16:00,897 basehttp 11 140635549988544 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+ERROR 2025-06-13 14:16:10,603 exception 11 140635549988544 Invalid HTTP_HOST header: 'auth_service:8001'. The domain name provided is not valid according to RFC 1034/1035.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/http/request.py", line 186, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'auth_service:8001'. The domain name provided is not valid according to RFC 1034/1035.
+WARNING 2025-06-13 14:16:10,626 log 11 140635549988544 Bad Request: /api/auth/profile/
+WARNING 2025-06-13 14:16:10,627 basehttp 11 140635549988544 "GET /api/auth/profile/ HTTP/1.1" 400 65340
+INFO 2025-06-13 14:18:19,269 autoreload 11 140635702266752 /app/config/settings.py changed, reloading.
+INFO 2025-06-13 14:18:19,947 autoreload 15 140686794075008 Watching for file changes with StatReloader
+INFO 2025-06-13 14:19:03,970 autoreload 11 140343159700352 Watching for file changes with StatReloader
+INFO 2025-06-13 14:19:24,964 basehttp 11 140343074879168 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+ERROR 2025-06-13 14:19:43,200 exception 11 140343074879168 Invalid HTTP_HOST header: 'auth_service:8001'. The domain name provided is not valid according to RFC 1034/1035.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/http/request.py", line 186, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'auth_service:8001'. The domain name provided is not valid according to RFC 1034/1035.
+WARNING 2025-06-13 14:19:43,221 log 11 140343074879168 Bad Request: /api/auth/profile/
+WARNING 2025-06-13 14:19:43,222 basehttp 11 140343074879168 "GET /api/auth/profile/ HTTP/1.1" 400 65450
+INFO 2025-06-13 14:21:48,153 autoreload 11 140636080196480 Watching for file changes with StatReloader
+INFO 2025-06-13 14:22:06,050 basehttp 11 140635995633344 "GET /api/auth/profile/ HTTP/1.0" 200 159196
+ERROR 2025-06-13 14:22:15,027 exception 11 140635995633344 Invalid HTTP_HOST header: 'auth_service:8001'. The domain name provided is not valid according to RFC 1034/1035.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/http/request.py", line 186, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'auth_service:8001'. The domain name provided is not valid according to RFC 1034/1035.
+WARNING 2025-06-13 14:22:15,048 log 11 140635995633344 Bad Request: /api/auth/profile/
+WARNING 2025-06-13 14:22:15,048 basehttp 11 140635995633344 "GET /api/auth/profile/ HTTP/1.1" 400 65486
+INFO 2025-06-13 14:27:56,584 autoreload 11 140363886463872 Watching for file changes with StatReloader
+WARNING 2025-06-13 14:28:09,545 log 11 140363802080960 Forbidden: /api/auth/profile/
+WARNING 2025-06-13 14:28:09,546 basehttp 11 140363802080960 "GET /api/auth/profile/ HTTP/1.0" 403 27
+INFO 2025-06-13 14:28:09,554 basehttp 11 140363802080960 "OPTIONS /api/auth/logout/ HTTP/1.0" 200 0
+WARNING 2025-06-13 14:28:09,568 log 11 140363802080960 Forbidden: /api/auth/logout/
+WARNING 2025-06-13 14:28:09,569 basehttp 11 140363802080960 "POST /api/auth/logout/ HTTP/1.0" 403 27
+INFO 2025-06-13 14:28:28,492 basehttp 11 140363802080960 "OPTIONS /api/auth/google-auth/ HTTP/1.0" 200 0
+INFO 2025-06-13 14:28:28,835 basehttp 11 140363802080960 "POST /api/auth/google-auth/ HTTP/1.0" 200 620
+INFO 2025-06-13 14:28:42,923 basehttp 11 140363802080960 "OPTIONS /api/auth/profile/picture/upload/ HTTP/1.0" 200 0
+INFO 2025-06-13 14:28:43,013 views 11 140363802080960 Profile picture uploaded successfully for user sanupam2004@gmail.com
+INFO 2025-06-13 14:28:43,023 basehttp 11 140363802080960 "POST /api/auth/profile/picture/upload/ HTTP/1.0" 200 649586
+INFO 2025-06-13 14:28:43,055 basehttp 11 140363802080960 "GET /api/auth/profile/ HTTP/1.0" 200 650027
+INFO 2025-06-13 14:28:43,106 basehttp 11 140363802080960 "GET /api/auth/profile/ HTTP/1.0" 200 650027
+INFO 2025-06-13 14:28:46,886 basehttp 11 140363802080960 "GET /api/auth/profile/ HTTP/1.0" 200 650027
+INFO 2025-06-13 14:28:52,235 basehttp 11 140363802080960 "GET /api/auth/profile/ HTTP/1.0" 200 650027
+ERROR 2025-06-13 14:29:04,831 exception 11 140363802080960 Invalid HTTP_HOST header: 'auth_service:8001'. The domain name provided is not valid according to RFC 1034/1035.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/http/request.py", line 186, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'auth_service:8001'. The domain name provided is not valid according to RFC 1034/1035.
+WARNING 2025-06-13 14:29:04,854 log 11 140363802080960 Bad Request: /api/auth/profile/
+WARNING 2025-06-13 14:29:04,855 basehttp 11 140363802080960 "GET /api/auth/profile/ HTTP/1.1" 400 65534
+INFO 2025-06-13 14:31:24,224 autoreload 11 140412112284544 Watching for file changes with StatReloader
+INFO 2025-06-13 14:31:26,220 basehttp 11 140412027139776 "GET /api/auth/profile/ HTTP/1.0" 200 650027
+ERROR 2025-06-13 14:31:34,349 exception 11 140412027139776 Invalid HTTP_HOST header: 'auth_service:8001'. The domain name provided is not valid according to RFC 1034/1035.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/http/request.py", line 186, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'auth_service:8001'. The domain name provided is not valid according to RFC 1034/1035.
+WARNING 2025-06-13 14:31:34,369 log 11 140412027139776 Bad Request: /api/auth/profile/
+WARNING 2025-06-13 14:31:34,370 basehttp 11 140412027139776 "GET /api/auth/profile/ HTTP/1.1" 400 65668
+INFO 2025-06-13 14:34:23,374 autoreload 11 139958097181568 Watching for file changes with StatReloader
+INFO 2025-06-13 14:34:43,082 basehttp 11 139957944448704 "GET /api/auth/profile/ HTTP/1.0" 200 650027
+ERROR 2025-06-13 14:34:50,591 exception 11 139957944448704 Invalid HTTP_HOST header: 'auth_service:8001'. The domain name provided is not valid according to RFC 1034/1035.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/http/request.py", line 186, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'auth_service:8001'. The domain name provided is not valid according to RFC 1034/1035.
+WARNING 2025-06-13 14:34:50,611 log 11 139957944448704 Bad Request: /api/auth/profile/
+WARNING 2025-06-13 14:34:50,612 basehttp 11 139957944448704 "GET /api/auth/profile/ HTTP/1.1" 400 65665
+INFO 2025-06-13 14:38:17,188 autoreload 11 140220744031104 Watching for file changes with StatReloader
+ERROR 2025-06-13 14:38:20,508 exception 11 140220658874048 Invalid HTTP_HOST header: 'auth_service:8001'. The domain name provided is not valid according to RFC 1034/1035.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/http/request.py", line 186, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'auth_service:8001'. The domain name provided is not valid according to RFC 1034/1035.
+WARNING 2025-06-13 14:38:20,529 log 11 140220658874048 Bad Request: /api/auth/profile/
+WARNING 2025-06-13 14:38:20,530 basehttp 11 140220658874048 "GET /api/auth/profile/ HTTP/1.1" 400 65665
+ERROR 2025-06-13 14:38:25,148 exception 11 140220658874048 Invalid HTTP_HOST header: 'auth_service:8001'. The domain name provided is not valid according to RFC 1034/1035.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/http/request.py", line 186, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'auth_service:8001'. The domain name provided is not valid according to RFC 1034/1035.
+WARNING 2025-06-13 14:38:25,163 log 11 140220658874048 Bad Request: /api/auth/profile/
+WARNING 2025-06-13 14:38:25,165 basehttp 11 140220658874048 "GET /api/auth/profile/ HTTP/1.1" 400 65665
+INFO 2025-06-13 14:40:50,200 autoreload 11 140360026631040 Watching for file changes with StatReloader
+INFO 2025-06-13 14:40:55,930 basehttp 11 140359866775232 "GET /api/auth/profile/ HTTP/1.0" 200 650027
+ERROR 2025-06-13 14:41:07,279 exception 11 140359866775232 Invalid HTTP_HOST header: 'auth_service:8001'. The domain name provided is not valid according to RFC 1034/1035.
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/http/request.py", line 186, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'auth_service:8001'. The domain name provided is not valid according to RFC 1034/1035.
+WARNING 2025-06-13 14:41:07,300 log 11 140359866775232 Bad Request: /api/auth/profile/
+WARNING 2025-06-13 14:41:07,300 basehttp 11 140359866775232 "GET /api/auth/profile/ HTTP/1.1" 400 65704

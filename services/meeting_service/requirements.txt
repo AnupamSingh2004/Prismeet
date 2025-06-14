@@ -1,25 +1,71 @@
-# Django Core
-Django==5.2.1
+# Django core
+Django==5.2.0
 djangorestframework==3.15.2
-django-cors-headers==4.3.1
-channels==4.1.0
+
+# REST Framework extensions
+drf-nested-routers
 
 # Database
 psycopg2-binary==2.9.9
-dj-database-url==2.2.0
+dj-database-url==2.1.0
 
-# Authentication & Security
+# Authentication & JWT
 djangorestframework-simplejwt==5.3.0
 
-# Configuration
+# CORS handling
+django-cors-headers==4.3.1
+
+# WebSocket support for real-time features
+channels==4.0.0
+channels-redis==4.2.0
+
+# Configuration management
 python-decouple==3.8
 
-# Production
+# Static file serving
 whitenoise==6.6.0
+
+# Redis for caching and channels
+redis==5.0.1
+django-redis==5.3.0
+
+# File handling and utilities
+Pillow==10.2.0
+
+# HTTP requests (for service communication)
+requests==2.31.0
+
+# Date/time utilities
+python-dateutil==2.8.2
+
+# JSON handling
+jsonfield==3.1.0
+
+# Logging
+colorlog==6.8.0
+
+# Development dependencies (optional)
+django-debug-toolbar==4.2.0
+pytest==8.0.0
+pytest-django==4.8.0
+factory-boy==3.3.0
+
+# Production dependencies
 gunicorn==21.2.0
+uvicorn[standard]==0.24.0
 
-# Utilities
-Pillow==10.3.0
-python-dateutil==2.9.0
-pytz==2024.1
+# Monitoring and health checks
+django-health-check==3.17.0
 
+# API documentation
+drf-spectacular==0.27.0
+
+# WebRTC and media processing (optional - for advanced features)
+aiortc==1.6.0
+
+# Task queue (optional - for background processing)
+celery==5.3.4
+kombu==5.3.4
+
+# Security
+cryptography==42.0.2

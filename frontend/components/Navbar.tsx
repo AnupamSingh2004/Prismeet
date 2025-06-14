@@ -16,7 +16,7 @@ const Navbar = () => {
 
     const navItems = [
         { name: 'Dashboard', href: '/dashboard', icon: Video },
-        { name: 'Meetings', href: '/meetings', icon: Calendar },
+        { name: 'Meetings', href: '/meeting', icon: Calendar },
         { name: 'Recordings', href: '/recordings', icon: FileText },
     ];
 

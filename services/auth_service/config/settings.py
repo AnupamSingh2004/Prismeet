@@ -9,18 +9,17 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from datetime import timedelta
 from pathlib import Path
-from decouple import config
+from decouple import config, Csv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config("DJANGO_SECRET_KEY")
 DEBUG = config("DJANGO_DEBUG", default=False, cast=bool)
-ALLOWED_HOSTS = config("DJANGO_ALLOWED_HOSTS", default="*", cast=lambda v: v.split(","))
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1,0.0.0.0,auth_service,meeting_service', cast=Csv())
 
 # Custom User Model
 AUTH_USER_MODEL = 'authentication.User'
 
-# Database configuration - FIXED: Removed duplicate DATABASES
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
