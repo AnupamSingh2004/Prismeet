@@ -15,7 +15,7 @@ jobs:
     steps:
       # Step 1: Get your code
       - name: 📥 Get the code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Step 2: Setup Docker Buildx (for better Docker builds)
       - name: 🔧 Setup Docker Buildx
