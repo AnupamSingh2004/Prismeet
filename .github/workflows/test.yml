@@ -16,7 +16,7 @@ jobs:
     steps:
       # Step 1: Get your code
       - name: 📥 Get the code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Step 2: Setup Node.js for React
       - name: 🟢 Setup Node.js
@@ -87,7 +87,7 @@ jobs:
     steps:
       # Step 1: Get your code
       - name: 📥 Get the code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Step 2: Setup Python
       - name: 🐍 Setup Python
